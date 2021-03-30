@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Table;
 
@@ -23,13 +24,14 @@ class Utilisateur
         $this->prenom = null;
         $this->anniversaire = null;
         $this->isadmin = false;
+        $this->paniers = new ArrayCollection();
     }
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $pk;
+    private $id;
 
     /**
      * @ORM\Column(type="string", length=30, options={"comment"="sert de login (doit être unique)"})
@@ -37,7 +39,7 @@ class Utilisateur
     private $identifiant;
 
     /**
-     * @ORM\Column(type="string", length=64,
+     * @ORM\Column(type="string", length=64, name="mot_de_passe",
      *      options={"comment"="mot de passe crypté : il faut une taille assez grande pour ne pas le tronquer"})
      */
     private $motdepasse;
@@ -58,13 +60,20 @@ class Utilisateur
     private $anniversaire;
 
     /**
-     * @ORM\Column(type="boolean", options={"comment"="type booléen", "default" = false })
+     * @ORM\Column(type="boolean", name="est_admin",
+     *     options={"comment"="type booléen", "default" = false })
      */
     private $isadmin;
 
-    public function getPk(): ?int
+    /**
+     * @ORM\OneToMany(targetEntity=Panier::class, mappedBy="idUtilisateur")
+     * @ORM\Column(nullable=true, options={"default" = null})
+     */
+    private $paniers;
+
+    public function getId(): ?int
     {
-        return $this->pk;
+        return $this->id;
     }
 
     public function getIdentifiant(): ?string
@@ -135,6 +144,36 @@ class Utilisateur
     public function setIsadmin(bool $isadmin): self
     {
         $this->isadmin = $isadmin;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Panier[]
+     */
+    public function getPaniers(): Collection
+    {
+        return $this->paniers;
+    }
+
+    public function addPanier(Panier $panier): self
+    {
+        if (!$this->paniers->contains($panier)) {
+            $this->paniers[] = $panier;
+            $panier->setIdUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removePanier(Panier $panier): self
+    {
+        if ($this->paniers->removeElement($panier)) {
+            // set the owning side to null (unless already changed)
+            if ($panier->getIdUtilisateur() === $this) {
+                $panier->setIdUtilisateur(null);
+            }
+        }
 
         return $this;
     }

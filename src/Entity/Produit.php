@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProduitRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Table;
 
@@ -33,6 +35,16 @@ class Produit
      * @ORM\Column(type="integer")
      */
     private $quantite;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Panier::class, mappedBy="idProduit")
+     */
+    private $paniers;
+
+    public function __construct()
+    {
+        $this->paniers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -71,6 +83,36 @@ class Produit
     public function setQuantite(int $quantite): self
     {
         $this->quantite = $quantite;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Panier[]
+     */
+    public function getPaniers(): Collection
+    {
+        return $this->paniers;
+    }
+
+    public function addPanier(Panier $panier): self
+    {
+        if (!$this->paniers->contains($panier)) {
+            $this->paniers[] = $panier;
+            $panier->setIdProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removePanier(Panier $panier): self
+    {
+        if ($this->paniers->removeElement($panier)) {
+            // set the owning side to null (unless already changed)
+            if ($panier->getIdProduit() === $this) {
+                $panier->setIdProduit(null);
+            }
+        }
 
         return $this;
     }

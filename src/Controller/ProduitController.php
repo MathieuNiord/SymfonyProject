@@ -11,7 +11,7 @@ class ProduitController extends AbstractController
     /**
      * @Route("/produit", name="produit")
      */
-    public function index(): Response
+    public function indexAction(): Response
     {
         return $this->render('produit/index.html.twig', [
             'controller_name' => 'ProduitController',
