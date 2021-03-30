@@ -20,39 +20,25 @@ class Panier
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Utilisateur::class, inversedBy="paniers")
-     * @ORM\JoinColumn(nullable=false)
-     * @ORM\Column (name="id_utilisateur")
-     */
-    private $idUtilisateur;
-
-    /**
      * @ORM\Column(type="integer")
      */
     private $quantite;
 
     /**
+     * @ORM\ManyToOne(targetEntity=Utilisateur::class, inversedBy="paniers")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $utilisateur;
+
+    /**
      * @ORM\ManyToOne(targetEntity=Produit::class, inversedBy="paniers")
      * @ORM\JoinColumn(nullable=false)
-     * @ORM\Column (name="id_produit")
      */
-    private $idProduit;
+    private $produit;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdUtilisateur(): ?Utilisateur
-    {
-        return $this->idUtilisateur;
-    }
-
-    public function setIdUtilisateur(?Utilisateur $idUtilisateur): self
-    {
-        $this->idUtilisateur = $idUtilisateur;
-
-        return $this;
     }
 
     public function getQuantite(): ?int
@@ -67,14 +53,26 @@ class Panier
         return $this;
     }
 
-    public function getIdProduit(): ?Produit
+    public function getUtilisateur(): ?Utilisateur
     {
-        return $this->idProduit;
+        return $this->utilisateur;
     }
 
-    public function setIdProduit(?Produit $idProduit): self
+    public function setUtilisateur(?Utilisateur $utilisateur): self
     {
-        $this->idProduit = $idProduit;
+        $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
+
+    public function getProduit(): ?Produit
+    {
+        return $this->produit;
+    }
+
+    public function setProduit(?Produit $produit): self
+    {
+        $this->produit = $produit;
 
         return $this;
     }
