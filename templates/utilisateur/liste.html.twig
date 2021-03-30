@@ -1,0 +1,7 @@
+<body>
+<ul><span>LISTE DES UTILISATEURS</span><br/>
+    {% for user in utilisateurs %}
+        <li>{{ user.getId() }}, {{ user.getNom() }}, {{ user.getIdentifiant }}</li>
+    {% endfor %}
+</ul>
+</body>

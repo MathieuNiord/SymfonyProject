@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Main !{% endblock %}</title>
+    {% block stylesheets %}
+        <link href="{{ asset('css/style.css') }}" type="text/css" rel="stylesheet">
+    {% endblock %}
+
+</head>
+<body>
+{{ include('templates/header.html.twig') }}
+{% block link %}{% endblock %}
+{% block body %}
+    <ul><span>INFOS</span><br/>
+    {% for msg in app.session.flashBag.get('info') %}
+        <li>{{ msg }}</li>
+    {% endfor %}
+    </ul>{% endblock %}
+{{ include('templates/footer.html.twig') }}
+</body>
+</html>

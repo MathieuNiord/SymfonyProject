@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Film;
-use App\Form\FilmType;
 use App\Form\UtilisateurType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -25,75 +23,108 @@ class UtilisateurController extends AbstractController
         ]);
     }
 
-    // - Ajout d'un nouvel utilisateur -
     /**
-     * @Route ("/utilisateur/liste/{nom}-{prenom}/{mdp}/{admin}{anniversaire}",
-     *     name="utilisateur_ajout",
-     *     defaults = {"anniversaire" : '01-01-2021'},
-     *     requirements = {
-     *     "nom" = "^[-]+",
-     *     "prenom" = "^[-]+"
-     *     }
+     * @Route (
+     *     "user/list",
+     *     name = "utilisateur_liste"
      * )
      */
-    /*
-    public function AjoutUtilisateurAction($name, $firstName, $pswd, $isAdmin = false, $birtday = null) : Response {
+    public function listeUtilisateurAction() : Response {
 
         $em = $this->getDoctrine()->getManager();
         $userRepository = $em->getRepository('App:Utilisateur');
+        $user = $userRepository->findAll();
 
-        $user = new Utilisateur();
-        $user ->setNom($name)
-              ->setPrenom($firstName)
-              ->setMotdepasse($pswd)
-              ->setAnniversaire($birtday)
-              ->setIsadmin($isAdmin);
+        $args = array(
+            'utilisateurs' => $user
+        );
 
-        $em->persist($user);
-        $em->flush();
-
-        dump($user);
-
-        return $this->redirectToRoute('templates/utilisateur/index');
+        return $this->render('Utilisateur/liste.html.twig', $args);
     }
-    */
+
+
     /**
-     * @Route("create",name="createAction")
+     * @Route("user/create",name="utilisateur_create")
+     * @param Request $request
+     * @return Response
      */
-    public function filmEditBisAction(Request $request): Response
+    public function createUserAction(Request $request): Response
     {
         $em = $this->getDoctrine()->getManager();
-        $filmRepository = $em->getRepository('App:Utilisateur');
 
         $form = $this->createForm(UtilisateurType::class);
-        $form->add('send', SubmitType::class, ['label' => 'créer l\'utilisateur']);
+        $form->add('send', SubmitType::class, ['label' => 'Création d\'un compte utilisateur']);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
+
             /** @var Utilisateur $user */
+
             $user = $form->getData();
+
             $user->setMotdepasse(sha1($user->getMotdepasse()));
+
             $em->persist($user);
             $em->flush();
-            $this->addFlash('info', 'ajout confirmé');
+            dump($user);
+
+            $this->addFlash('info', 'L\'utilisateur a bien été créé');
+
             return $this->render('templates/main.html.twig');
         }
 
-        if ($form->isSubmitted())
-            $this->addFlash('info', 'échec de l\'ajout');
+        if ($form->isSubmitted()) $this->addFlash('info', 'échec de l\'ajout');
+
         $args = array('myform' => $form->createView());
+
         return $this->render('utilisateur/ajoutUtilisateur.html.twig', $args);
     }
 
+    // - Suppression d'un utilisateur à partir de son id -
 
+    /**
+     * @Route ("user/delete/{id}",
+     *     name="utilisateur_suppression",
+     *     requirements = {"id" = "[0-9]\d*"}
+     * )
+     * @param $id
+     * @return Response
+     */
 
+    public function suppressionUtilisateurAction($id) : Response {
 
+        if ($this->getParameter('id') == 0) {
 
+            $em = $this->getDoctrine()->getManager();
+            $userRepository = $em->getRepository('App:Utilisateur');
 
+            ///** @var Utilisateur $user */
 
+            $user = $userRepository->find($id);
 
+            dump($user);
 
+            if ($user->getIsadmin() != 0) {
+
+                $this->addFlash("info", "Vous ne pouvez pas supprimer un administrateur");
+                $this->render('templates/main.html.twig');
+            }
+
+            else {
+
+                $em->remove($user);
+                $em->flush();
+
+                $this->addFlash("info", "Utilisateur " . $user->getNom() . " supprimé");
+                return $this->redirectToRoute('utilisateur_liste');
+            }
+        }
+
+        else {
+            $this->addFlash("info", "Vous n'avez pas les droits");
+            return $this->redirectToRoute('utilisateur_liste');
+        }
+    }
 
     // - Affichage du panier d'un utilisateur par son id -
     /**
@@ -114,7 +145,7 @@ class UtilisateurController extends AbstractController
         $carts = $userRepository->find($user->getPanier());
         dump($carts);
 
-        return $this->redirectToRoute('templates/utilisateur/panier', $carts);
+        return $this->redirectToRoute('templates/utilisateur/panier');
     }
 
 }

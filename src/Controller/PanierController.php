@@ -38,9 +38,9 @@ class PanierController extends AbstractController
         $em = $this->getDoctrine()->getManager();
 
         $panier = new Panier();
-        $panier -> setIdUtilisateur($user)
-                -> setIdProduit($product)
-                ->setQuantite($quantity);
+        $panier -> setUtilisateur($user)
+                -> setProduit($product)
+                -> setQuantite($quantity);
 
         $em->persist($panier);
         $em->flush();
