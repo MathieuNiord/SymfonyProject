@@ -107,7 +107,7 @@ class UtilisateurController extends AbstractController
             if ($user->getIsadmin() != 0) {
 
                 $this->addFlash("info", "Vous ne pouvez pas supprimer un administrateur");
-                $this->render('templates/main.html.twig');
+                return $this->render('templates/main.html.twig');
             }
 
             else {
@@ -122,7 +122,7 @@ class UtilisateurController extends AbstractController
 
         else {
             $this->addFlash("info", "Vous n'avez pas les droits");
-            return $this->redirectToRoute('utilisateur_liste');
+            return $this->render('templates/main.html.twig');
         }
     }
 
