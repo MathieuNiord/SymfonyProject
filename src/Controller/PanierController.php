@@ -22,7 +22,7 @@ class PanierController extends AbstractController
 
     // - Ajout d'un produit dans le panier pour un utilisateur donné -
     /**
-     * @Route ("/panier/ajout/{id_utilisateur}/{id_produit}/{quantite},
+     * @Route ("/panier/ajout/{id_utilisateur}/{id_produit}/{quantite}",
      *     name="panier_ajout",
      *     defaults = {"quantite" : 1},
      *     requirements = {
@@ -51,7 +51,7 @@ class PanierController extends AbstractController
 
     // - Suppression d'un article dans le panier (enregistrement de la table) avec son id -
     /**
-     * @Route ("/panier/suppression/{id},
+     * @Route ("/panier/suppression/{id}",
      *     name="panier_suppression",
      *     requirements = {
      *     "id" : "[1-9]\d*",

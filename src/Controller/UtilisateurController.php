@@ -22,7 +22,7 @@ class UtilisateurController extends AbstractController
 
     // - Ajout d'un nouvel utilisateur -
     /**
-     * @Route ("/utilisateur/liste/{nom}-{prenom}/{mdp}/{admin}{anniversaire},
+     * @Route ("/utilisateur/liste/{nom}-{prenom}/{mdp}/{admin}{anniversaire}",
      *     name="utilisateur_ajout",
      *     defaults = {"anniversaire" : '01-01-2021'},
      *     requirements = {
@@ -32,7 +32,7 @@ class UtilisateurController extends AbstractController
      * )
      */
 
-    public function AjoutUtilisateurAction($name, $firstName, $pswd, $isAdmin = false, $birtday = null) : Response {
+    public function AjoutUtilisateurAction($name, $firstName, $pswd, $isAdmin = false, $birthday = null) : Response {
 
         $em = $this->getDoctrine()->getManager();
         $userRepository = $em->getRepository('App:Utilisateur');
@@ -41,7 +41,7 @@ class UtilisateurController extends AbstractController
         $user ->setNom($name)
               ->setPrenom($firstName)
               ->setMotdepasse($pswd)
-              ->setAnniversaire($birtday)
+              ->setAnniversaire($birthday)
               ->setIsadmin($isAdmin);
 
         $em->persist($user);
@@ -54,7 +54,7 @@ class UtilisateurController extends AbstractController
 
     // - Affichage du panier d'un utilisateur par son id -
     /**
-     * @Route ("/utilisateur/liste/{id},
+     * @Route ("/utilisateur/liste/{id}",
      *     name="utilisateur_liste_panier",
      *     requirements = {
      *     "id" : "[1-9]\d*",
