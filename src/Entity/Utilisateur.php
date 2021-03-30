@@ -19,13 +19,15 @@ class Utilisateur
     /**
      * Utilisateur constructor
      */
-    public function __construct(){
+    public function __construct()
+    {
         $this->nom = null;
         $this->prenom = null;
         $this->anniversaire = null;
         $this->isadmin = false;
         $this->paniers = new ArrayCollection();
     }
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -65,11 +67,6 @@ class Utilisateur
      */
     private $isadmin;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Panier::class, mappedBy="idUtilisateur")
-     * @ORM\Column(nullable=true, options={"default" = null})
-     */
-    private $paniers;
 
     public function getId(): ?int
     {
@@ -144,36 +141,6 @@ class Utilisateur
     public function setIsadmin(bool $isadmin): self
     {
         $this->isadmin = $isadmin;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Panier[]
-     */
-    public function getPaniers(): Collection
-    {
-        return $this->paniers;
-    }
-
-    public function addPanier(Panier $panier): self
-    {
-        if (!$this->paniers->contains($panier)) {
-            $this->paniers[] = $panier;
-            $panier->setIdUtilisateur($this);
-        }
-
-        return $this;
-    }
-
-    public function removePanier(Panier $panier): self
-    {
-        if ($this->paniers->removeElement($panier)) {
-            // set the owning side to null (unless already changed)
-            if ($panier->getIdUtilisateur() === $this) {
-                $panier->setIdUtilisateur(null);
-            }
-        }
 
         return $this;
     }
