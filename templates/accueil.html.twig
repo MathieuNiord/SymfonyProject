@@ -1,0 +1,15 @@
+{% extends 'templates/base.html.twig' %}
+
+{% block body2 %}
+    <p>
+    {% if user is null%}
+        null
+    {% else %}
+        {% if user.isadmin == true %}
+            {{ user.nom }} est admin
+        {% else %}
+            {{ user.nom }} n'est pas admin
+        {% endif %}
+    {% endif %}
+    </p>
+{% endblock %}

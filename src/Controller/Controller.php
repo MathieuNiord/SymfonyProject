@@ -56,8 +56,6 @@ class Controller extends AbstractController
             $this->addFlash('info', 'vous vous êtes bien déconnecté');
             return $this->render("templates/main.html.twig");
         }
-
-
     }
     //TODO Modifier son profil (similaire à la Création d'un compte mais avec les champs
     // remplis par les valeurs actuelles)
