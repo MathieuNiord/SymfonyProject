@@ -1,0 +1,28 @@
+<body>
+    <h1>Liste des produits</h1>
+
+    {% if products is empty %}
+        <p>Aucun produit dans la liste</p>
+    {% else %}
+        <table>
+            <tr>
+                <th>Libellé</th>
+                <th>Quantité</th>
+                <th>Prix</th>
+            </tr>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.libelle }}</td>
+                    <td>{{ product.quantite }}</td>
+                    <td>{{ product.prix }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+    <ul>
+        <span>INFOS</span><br/>
+        {% for msg in app.session.flashBag.get('info') %}
+            <li>{{ msg }}</li>
+        {% endfor %}
+    </ul>
+</body>

@@ -12,17 +12,18 @@
                 </tr>
                 {% for user in utilisateurs %}
                         <tr>
-                                <td>{{ user.getIdentifiant }}</td>
-                                <td>{{ user.getNom() }}</td>
-                                <td>{{ user.getPrenom() }}</td>
-                                <td>{{ user.getAnniversaire()|date('d-m-Y') }}</td>
-                                {% if user.getIsadmin() == 1 %}
+                                <td>{{ user.identifiant }}</td>
+                                <td>{{ user.nom }}</td>
+                                <td>{{ user.prenom }}</td>
+                                <td>{{ user.anniversaire|date('d-m-Y') }}</td>
+                                {% if user.isadmin == 1 %}
                                         <td>admin</td>
                                 {% else %}
-                                        <td>non admin</td>
+                                        <td>user</td>
                                 {% endif %}
-                                <td>{{ user.getMotdepasse() }}</td>
+                                <td>{{ user.motdepasse }}</td>
                         </tr>
                 {% endfor %}
         </table>
+
 </body>

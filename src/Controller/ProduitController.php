@@ -23,7 +23,7 @@ class ProduitController extends AbstractController
     }
 
     /**
-     * @Route ("produit/ajout", name="produit_ajout")
+     * @Route ("product/add", name="produit_ajout")
      * @param Request $request
      * @return Response
      */
@@ -48,7 +48,7 @@ class ProduitController extends AbstractController
 
             $this->addFlash('info', 'Le produit a bien été ajouté');
 
-            return $this->render('templates/main.html.twig');
+            return $this->redirectToRoute('produit_liste');
         }
 
         if ($form->isSubmitted()) $this->addFlash('info', 'échec de l\'ajout');
@@ -56,5 +56,52 @@ class ProduitController extends AbstractController
         $args = array('product_form' => $form->createView());
 
         return $this->render('produit/ajoutProduit.html.twig', $args);
+    }
+
+    /**
+     * @Route ("product/delete/{id}", name="produit_suppression")
+     * @return Response
+     */
+
+    public function deleteProductAction($id): Response
+    {
+        $em = $this->getDoctrine()->getManager();
+        $productRepository = $em->getRepository('App:Produit');
+
+        /** @var Produit $product **/
+        $product = $productRepository->find($id);
+
+
+        if (!is_null($product)) {
+
+            $em->remove($product);
+            $em->flush();
+
+            dump($product);
+
+            $this->addFlash('info', 'Le produit ' . $product->getLibelle() . ' a bien été supprimé');
+        }
+
+        else {
+            $this->addFlash('info', 'Le produit n\'existe pas ou plus');
+        }
+
+        return $this->redirectToRoute('produit_liste');
+    }
+
+    /**
+     * @Route ("product/list", name="produit_liste")
+     * @return Response
+     */
+
+    public function listProductAction(): Response
+    {
+        $em = $this->getDoctrine()->getManager();
+        $productRepository = $em->getRepository('App:Produit');
+        $products = $productRepository->findAll();
+
+        $args = array('products' => $products);
+
+        return $this->render('produit/listeProduits.html.twig', $args);
     }
 }
