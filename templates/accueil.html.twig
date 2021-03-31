@@ -1,6 +1,14 @@
 {% extends 'templates/base.html.twig' %}
 
 {% block body2 %}
+    <h2>Voici la liste des flashs : </h2>
+
+    <ul>
+    {% for msg in app.session.flashBag.get('info') %}
+        <li>{{ msg }}</li>
+    {% endfor %}
+    </ul>
+
     <p>
     {% if user is null%}
         null
