@@ -14,16 +14,6 @@ use Symfony\Component\Security\Core\User\User;
 class UtilisateurController extends AbstractController
 {
     /**
-     * @Route("/utilisateur", name="utilisateur")
-     */
-    public function indexAction(): Response
-    {
-        return $this->render('utilisateur/index.html.twig', [
-            'controller_name' => 'UtilisateurController',
-        ]);
-    }
-
-    /**
      * @Route (
      *     "user/list",
      *     name = "utilisateur_liste"
@@ -35,9 +25,7 @@ class UtilisateurController extends AbstractController
         $userRepository = $em->getRepository('App:Utilisateur');
         $user = $userRepository->findAll();
 
-        $args = array(
-            'utilisateurs' => $user
-        );
+        $args = array('utilisateurs' => $user);
 
         return $this->render('Utilisateur/liste.html.twig', $args);
     }
@@ -70,7 +58,7 @@ class UtilisateurController extends AbstractController
 
             $this->addFlash('info', 'L\'utilisateur a bien été créé');
 
-            return $this->render('templates/main.html.twig');
+            return $this->redirectToRoute('utilisateur_liste');
         }
 
         if ($form->isSubmitted()) $this->addFlash('info', 'échec de l\'ajout');
@@ -93,47 +81,36 @@ class UtilisateurController extends AbstractController
 
     public function suppressionUtilisateurAction($id) : Response {
 
-        if ($this->getParameter('id') == 0) {
+        $em = $this->getDoctrine()->getManager();
+        $userRepository = $em->getRepository('App:Utilisateur');
+        $idUser = $this->getParameter('id');
 
-            $em = $this->getDoctrine()->getManager();
-            $userRepository = $em->getRepository('App:Utilisateur');
+         /** @var Utilisateur $user **/
+        $user = $userRepository->find($idUser);
 
-            ///** @var Utilisateur $user */
+        if (!is_null($user) && $user-> getIsadmin()) {
 
-            $user = $userRepository->find($id);
-
-            dump($user);
-
-            if ($user->getIsadmin() != 0) {
-
-                $this->addFlash("info", "Vous ne pouvez pas supprimer un administrateur");
-                return $this->render('templates/main.html.twig');
-            }
-
-            else {
-
-                $em->remove($user);
+            $userRemoved = $userRepository->find($id);
+            if(!is_null($userRemoved)){
+                $this->addFlash("info", "Utilisateur " . $userRemoved->getNom() . " supprimé");
+                $em->remove($userRemoved);
                 $em->flush();
-
-                $this->addFlash("info", "Utilisateur " . $user->getNom() . " supprimé");
-                return $this->redirectToRoute('utilisateur_liste');
             }
+            else{
+                $this->addFlash("info", "Utilisateur non reconnu");
+            }
+            return $this->redirectToRoute('utilisateur_liste');
         }
 
         else {
-            $this->addFlash("info", "Vous n'avez pas les droits");
-            return $this->render('templates/main.html.twig');
+            $this->addFlash("info", "Vous ne pouvez pas supprimer car vous n'êtes pas admin");
+            return $this->render('accueil.html.twig');
         }
     }
 
     // - Affichage du panier d'un utilisateur par son id -
     /**
-     * @Route ("/utilisateur/liste/{id}",
-     *     name="utilisateur_liste_panier",
-     *     requirements = {
-     *     "id" = "[1-9]\d*",
-     *     }
-     * )
+     * @Route ("panier",name="panier")
      */
 
     public function listePanierUtilisateurAction($id) : Response {
