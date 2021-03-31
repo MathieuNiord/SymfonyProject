@@ -4,20 +4,24 @@
         <table>
                 <tr>
                         <th>Login</th>
-                        <th>Mot de passe</th>
                         <th>Nom</th>
                         <th>Prénom</th>
                         <th>Date de naissance</th>
                         <th>Statut</th>
+                        <th>Mot de passe</th>
                 </tr>
                 {% for user in utilisateurs %}
                         <tr>
                                 <td>{{ user.getIdentifiant }}</td>
-                                <td>{{ user.getMotdepasse() }}</td>
                                 <td>{{ user.getNom() }}</td>
                                 <td>{{ user.getPrenom() }}</td>
                                 <td>{{ user.getAnniversaire()|date('d-m-Y') }}</td>
-                                <td>{{ user.getIsadmin() }}</td>
+                                {% if user.getIsadmin() == 1 %}
+                                        <td>admin</td>
+                                {% else %}
+                                        <td>non admin</td>
+                                {% endif %}
+                                <td>{{ user.getMotdepasse() }}</td>
                         </tr>
                 {% endfor %}
         </table>
