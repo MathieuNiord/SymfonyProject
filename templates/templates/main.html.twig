@@ -16,7 +16,8 @@
     {% for msg in app.session.flashBag.get('info') %}
         <li>{{ msg }}</li>
     {% endfor %}
-    </ul>{% endblock %}
+    </ul>
+{% endblock %}
 {{ include('templates/footer.html.twig') }}
 </body>
 </html>
