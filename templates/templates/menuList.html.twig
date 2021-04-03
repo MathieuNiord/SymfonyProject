@@ -1,7 +1,22 @@
-<h2>Voici la liste des liens :</h2>
+<h2>Voici la liste des actions réalisables :</h2>
 <ul>
-    <li><a href="{{ path('',type) }}"></a></li>
+    <li><a href="{{ path('accueil',{'user': user}) }}">Accueil</a></li>
+    {% if user is null %}
+        <li><a href="{{ path('accueil',{'user': user}) }}">Se Connecter</a></li>
+        <li><a href="{{ path('accueil',{'user': user}) }}">S'inscrire</a></li>
+    {% else %}
+        <li><a href="{{ path('accueil',{'user': user}) }}">Déconnexion</a></li>
+        {% if user.isadmin ==0 %}
+
+        <li><a href="{{ path('accueil',{'user': user}) }}">Editer le profil</a></li>
+        <li><a href="{{ path('accueil',{'user': user}) }}">Magasin</a></li>
+        <li><a href="{{ path('accueil',{'user': user}) }}">Panier</a></li>
+
+        {% else %}
+            <li><a href="{{ path('accueil',{'user': user}) }}">Gérer les utilisateurs</a></li>
+            <li><a href="{{ path('accueil',{'user': user}) }}">Ajouter un produit</a></li>
+            <li><a href="https://fr.wikipedia.org/wiki/Amour_et_Amnésie">Amour et Amnésie</a></li>
+        {% endif %}
+    {% endif %}
 </ul>
-
-
-<p> Il y a {{ nbProduit }} disponible(s) dans le magasin !</p>
+<p> Il y a {{ nbProduits }} produit(s) disponible(s) dans le magasin !</p>

@@ -18,6 +18,7 @@
             <li>{{ msg }}</li>
         {% endfor %}
     </ul>
+    {{ render(controller('App\\Controller\\MenuController::menuAction')) }}
     {% block body2 %}{% endblock %}
     {{ include('templates/footer.html.twig') }}
 {% endblock %}

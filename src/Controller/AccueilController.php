@@ -7,23 +7,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AccueilController extends AbstractController
+class AccueilController extends MyAbstractController
 {
     /**
      * @Route("", name="accueil")
      */
     public function accueilAction():Response{
-
-        $em = $this->getDoctrine()->getManager();
-        $userRep = $em->getRepository('App:Utilisateur');
-
-        $id = $this->getParameter('id');
-
-        $user = $userRep->find($id);
-
-
-
-        return $this->render('accueil.html.twig',['user' => $user]);
+        return $this->render('accueil.html.twig',['user' => $this->getCurrentUser()]);
     }
 }
 
