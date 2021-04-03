@@ -37,7 +37,7 @@ class UtilisateurController extends AbstractController
 
         $args = array('utilisateurs' => $user);
 
-        return $this->render('Utilisateur/liste.html.twig', $args);
+        return $this->render('Utilisateur/listeUtilisateurs.html.twig', $args);
     }
 
 

@@ -1,12 +1,10 @@
 <header>
     <h1>Bienvenue</h1>
-    {% if type==0 %}
+    {% if user is null %}
         <img src="{{ asset('images/visiteur.png') }}" alt="visiteur">
-    {% endif %}
-    {% if type==1 %}
+    {% elseif user.isadmin == 0 %}
         <img src="{{ asset('images/utilisateur.png') }}" alt="client">
-    {% endif %}
-    {% if type==2 %}
+    {% else %}
         <img src="{{ asset('images/administrateur.png') }}" alt="admin">
     {% endif %}
 </header>
