@@ -1,4 +1,12 @@
 <header>
     <h1>Bienvenue</h1>
-    {# TODO FOOTER #}
+    {% if type==0 %}
+        <img src="{{ asset('images/visiteur.png') }}" alt="visiteur">
+    {% endif %}
+    {% if type==1 %}
+        <img src="{{ asset('images/utilisateur.png') }}" alt="client">
+    {% endif %}
+    {% if type==2 %}
+        <img src="{{ asset('images/administrateur.png') }}" alt="admin">
+    {% endif %}
 </header>

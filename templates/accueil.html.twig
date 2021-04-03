@@ -1,28 +1,16 @@
-{% extends 'templates/base.html.twig' %}
+{% extends 'templates/main.html.twig' %}
 
 {% block body2 %}
-    <h2>Voici la liste des flashs : </h2>
-
-    <ul>
-    {% for msg in app.session.flashBag.get('info') %}
-        <li>{{ msg }}</li>
-    {% endfor %}
-    </ul>
-
-    <p>
-    {% if user is null%}
-        null
-    {% else %}
-        {% if user.isadmin == true %}
-            {{ user.nom }} est admin
+    <p>Bienvenue sur la page d'accueil !</p>
+    <p> Vous êtes un
+        {% if user is null%}
+            visiteur
         {% else %}
-            {{ user.nom }} n'est pas admin
+            {% if user.isadmin == true %}
+                {{ user.nom }} admin
+            {% else %}
+                {{ user.nom }} client
+            {% endif %}
         {% endif %}
-    {% endif %}
     </p>
-    <ul><span>INFOS</span><br/>
-        {% for msg in app.session.flashBag.get('info') %}
-            <li>{{ msg }}</li>
-        {% endfor %}
-    </ul>
 {% endblock %}

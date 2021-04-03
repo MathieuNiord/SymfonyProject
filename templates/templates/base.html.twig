@@ -2,21 +2,11 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Main !{% endblock %}</title>
-    {% block stylesheets %}
-        <link href="{{ asset('css/style.css') }}" type="text/css" rel="stylesheet">
-    {% endblock %}
-
+    <title>{% block title %}1er étage{% endblock %}</title>
+    <link href="{{ asset('css/styleBase.css') }}" type="text/css" rel="stylesheet">
+    {% block stylesheets %}{% endblock %}
 </head>
 <body>
-
-
-{% block link %}{% endblock %}
-{% block body1 %}
-    {{ include('templates/header.html.twig') }}
-    {% block body2 %}{% endblock %}
-    {{ include('templates/footer.html.twig') }}
-{% endblock %}
-
+{% block body %}{% endblock %}
 </body>
 </html>

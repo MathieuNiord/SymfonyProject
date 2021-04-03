@@ -1,23 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Main !{% endblock %}</title>
-    {% block stylesheets %}
-        <link href="{{ asset('css/style.css') }}" type="text/css" rel="stylesheet">
-    {% endblock %}
+{% extends 'templates/base.html.twig' %}
 
-</head>
-<body>
-{{ include('templates/header.html.twig') }}
-{% block link %}{% endblock %}
-{% block body %}
-    <ul><span>INFOS</span><br/>
-    {% for msg in app.session.flashBag.get('info') %}
-        <li>{{ msg }}</li>
-    {% endfor %}
-    </ul>
+{% block title %}2ème étage{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('css/styleBase2.css') }}" type="text/css" rel="stylesheet">
 {% endblock %}
-{{ include('templates/footer.html.twig') }}
-</body>
-</html>
+
+{% block body%}
+    {{ render(controller('App\\Controller\\HeaderController::imageAction')) }}
+    <ul>
+        {% for msg in app.session.flashBag.get('info') %}
+            <li>{{ msg }}</li>
+        {% endfor %}
+    </ul>
+    <ul>
+        {% for msg in app.session.flashBag.get('error') %}
+            <li>{{ msg }}</li>
+        {% endfor %}
+    </ul>
+    {% block body2 %}{% endblock %}
+    {{ include('templates/footer.html.twig') }}
+{% endblock %}
