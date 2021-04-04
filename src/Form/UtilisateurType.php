@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Utilisateur;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,8 +17,9 @@ class UtilisateurType extends AbstractType
             ->add('motDePasse')
             ->add('nom')
             ->add('prenom')
-            ->add('aniversaire')
-            ->add('isAdmin')
+            ->add('aniversaire', DateType::Class, array(
+                'years' => range(date('Y')-100, date('Y')-13)
+            ));
         ;
     }
 

@@ -75,7 +75,7 @@ class UtilisateurController extends AbstractController
 
         $args = array('myform' => $form->createView());
 
-        return $this->render('utilisateur/ajoutUtilisateur.html.twig', $args);
+        return $this->render('ajoutUtilisateur.html.twig', $args);
     }
 
     // - Suppression d'un utilisateur à partir de son id -

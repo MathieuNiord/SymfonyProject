@@ -65,8 +65,8 @@ class Utilisateur
     /**
      * @ORM\Column(type="date", nullable=true, options={"default"=null})
      * @Assert\Range(
-     *     min="1900", minMessage="êtes vous toujours vivant ?",
-     *     max="2020", maxMessage="Vous savez lire/parler ?")
+     *     min="1920", minMessage="êtes vous toujours vivant ?",
+     *     max="2009", maxMessage="Vous savez lire/parler ?")
      */
     private $aniversaire;
 
