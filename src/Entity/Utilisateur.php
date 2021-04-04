@@ -6,46 +6,72 @@ use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UtilisateurRepository::class)
+ * @ORM\Table(name="im2021_utilisateurs",options={"comment"="Table des utilisateurs du site"})
  */
 class Utilisateur
 {
     /**
+     * Utilisateur constructor
+     */
+    public function __construct()
+    {
+        $this->nom = null;
+        $this->prenom = null;
+        $this->anniversaire = null;
+        $this->isadmin = false;
+        $this->paniers = new ArrayCollection();
+    }
+
+
+    /**
      * @ORM\Id
      * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", name="pk")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=30)
+     * @ORM\Column(
+     *     type="string", length=30, name="identifiant",
+     *     options={"comment" = "sert de login (doit être unique)"})
+     * @Assert\NotBlank(message = "Le champ identifiant ne peut pas être vide")
+     * @Assert\Length(max="32")
      */
     private $identifiant;
 
     /**
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(
+     *     type="string", length=64, name="motdepasse",
+     *     options={"comment" = "mot de passe crypté : il faut une taille assez grande pour ne pas le tronquer"})
+     * @Assert\NotBlank(message = "Le champ mot de passe ne peut pas être vide")
+     * @Assert\Length(max="64")
      */
     private $motDePasse;
 
     /**
-     * @ORM\Column(type="string", length=30, nullable=true)
+     * @ORM\Column(type="string", length=30, nullable=true, options={"default"=null})
      */
     private $nom;
 
     /**
-     * @ORM\Column(type="string", length=30, nullable=true)
+     * @ORM\Column(type="string", length=30, nullable=true, options={"default"=null})
      */
     private $prenom;
 
     /**
-     * @ORM\Column(type="date", nullable=true)
+     * @ORM\Column(type="date", nullable=true, options={"default"=null})
+     * @Assert\Range(
+     *     min="1900", minMessage="êtes vous toujours vivant ?",
+     *     max="2020", maxMessage="Vous savez lire/parler ?")
      */
     private $aniversaire;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", name="isadmin", options={"default"=false , "comment"="type booléen"})
      */
     private $isAdmin;
 
@@ -54,10 +80,6 @@ class Utilisateur
      */
     private $paniers;
 
-    public function __construct()
-    {
-        $this->paniers = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
