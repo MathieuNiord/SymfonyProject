@@ -1,0 +1,42 @@
+{% extends 'templates/base.html.twig' %}
+
+{% block title %}Magasin{% endblock %}
+
+{% block body %}
+    <h1>Liste des produits</h1>
+
+    <div class="container">
+        {% if products is empty %}
+            <p>Aucun produit dans la liste</p>
+        {% else %}
+            <table>
+                <tr>
+                    <th>Libellé</th>
+                    <th>Prix</th>
+                    <th>En stock</th>
+                    <th>Quantité</th>
+                </tr>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.libelle }}</td>
+                        <td>{{ product.prix }}</td>
+                        <td>{{ product.quantite }}</td>
+                        <td>
+                            <label>
+                                <select>
+                                    {% for i in 0..product.quantite %}
+                                    <option>{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="4"><input type="button" class="submit" value="Commander"/></td>
+                </tr>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
+

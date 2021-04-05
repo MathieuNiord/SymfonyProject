@@ -2,14 +2,14 @@
 
 {% block body2 %}
     <p>Bienvenue sur la page d'accueil !</p>
-    <p> Vous êtes un
+    <p> Bonjour
         {% if user is null%}
-            visiteur
+            visiteur !
         {% else %}
             {% if user.isadmin == true %}
-                {{ user.nom }} admin
+                {{ user.nom }}, vous êtes admin
             {% else %}
-                {{ user.nom }} client
+                {{ user.nom }} vous êtes un client
             {% endif %}
         {% endif %}
     </p>

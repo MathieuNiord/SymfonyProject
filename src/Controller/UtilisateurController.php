@@ -37,12 +37,12 @@ class UtilisateurController extends AbstractController
 
         $args = array('utilisateurs' => $user);
 
-        return $this->render('Utilisateur/listeUtilisateurs.html.twig', $args);
+        return $this->render('listeUtilisateurs.html.twig', $args);
     }
 
 
     /**
-     * @Route("user/create",name="utilisateur_create")
+     * @Route("user/create",name="utilisateur_creation")
      * @param Request $request
      * @return Response
      */
@@ -127,28 +127,6 @@ class UtilisateurController extends AbstractController
             $this->addFlash("info", "Vous n'avez pas les droits");
             return $this->render('accueil.html.twig', $args);
         }
-    }
-
-    // - Affichage du panier d'un utilisateur par son id -
-    /**
-     * @Route ("/utilisateur/liste/{id}",
-     *     name="utilisateur_liste_panier",
-     *     requirements = {
-     *     "id" = "[1-9]\d*",
-     *     }
-     * )
-     */
-
-    public function listePanierUtilisateurAction($id) : Response {
-
-        $em = $this->getDoctrine()->getManager();
-        $userRepository = $em->getRepository('App:Utilisateur');
-        $user = $userRepository->find($id);
-
-        $carts = $userRepository->find($user->getPanier());
-        dump($carts);
-
-        return $this->redirectToRoute('templates/utilisateur/panier');
     }
 
 }

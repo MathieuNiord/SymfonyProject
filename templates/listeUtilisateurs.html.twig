@@ -1,15 +1,16 @@
 {% extends 'templates/main.html.twig' %}
-{% block body2 %}
+
+{% block body %}
     <h1>Liste des utilisateurs</h1>
 
-    <table>
+    <table border="1">
         <tr>
-            <th>Login</th>
-            <th>Nom</th>
-            <th>Prénom</th>
-            <th>Date de naissance</th>
-            <th>Statut</th>
-            <th>Mot de passe</th>
+            <th align="left">Login</th>
+            <th align="left">Nom</th>
+            <th align="left">Prénom</th>
+            <th align="left">Date de naissance</th>
+            <th align="left">Statut</th>
+            <th align="left">   Mot de passe</th>
         </tr>
         {% for user in utilisateurs %}
             <tr>

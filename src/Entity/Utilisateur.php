@@ -22,7 +22,7 @@ class Utilisateur
         $this->nom = null;
         $this->prenom = null;
         $this->anniversaire = null;
-        $this->isadmin = false;
+        $this->isAdmin = false;
         $this->paniers = new ArrayCollection();
     }
 
@@ -36,7 +36,7 @@ class Utilisateur
 
     /**
      * @ORM\Column(
-     *     type="string", length=30, name="identifiant",
+     *     type="string", length=30, name="identifiant", unique=true
      *     options={"comment" = "sert de login (doit être unique)"})
      * @Assert\NotBlank(message = "Le champ identifiant ne peut pas être vide")
      * @Assert\Length(max="32")
@@ -64,14 +64,11 @@ class Utilisateur
 
     /**
      * @ORM\Column(type="date", nullable=true, options={"default"=null})
-     * @Assert\Range(
-     *     min="1920", minMessage="êtes vous toujours vivant ?",
-     *     max="2009", maxMessage="Vous savez lire/parler ?")
      */
-    private $aniversaire;
+    private $anniversaire;
 
     /**
-     * @ORM\Column(type="boolean", name="isadmin", options={"default"=false , "comment"="type booléen"})
+     * @ORM\Column(type="boolean", name="isadmin", options={"default"=0 , "comment"="type booléen"})
      */
     private $isAdmin;
 
@@ -134,14 +131,14 @@ class Utilisateur
         return $this;
     }
 
-    public function getAniversaire(): ?\DateTimeInterface
+    public function getAnniversaire(): ?\DateTimeInterface
     {
-        return $this->aniversaire;
+        return $this->anniversaire;
     }
 
-    public function setAniversaire(?\DateTimeInterface $aniversaire): self
+    public function setAnniversaire(?\DateTimeInterface $anniversaire): self
     {
-        $this->aniversaire = $aniversaire;
+        $this->anniversaire = $anniversaire;
 
         return $this;
     }

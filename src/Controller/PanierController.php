@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Produit;
+use App\Entity\Utilisateur;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Panier;
-class PanierController extends AbstractController
+class PanierController extends MyAbstractController
 {
     /**
      * @Route("/panier", name="panier")
@@ -19,32 +21,40 @@ class PanierController extends AbstractController
     }
 
     // - Ajout d'un produit dans le panier pour un utilisateur donné -
+
     /**
-     * @Route ("/panier/ajout/{id_utilisateur}/{id_produit}/{quantite}",
+     * @Route ("/panier/ajout/{id_user}/{id_produit}/{quantite}",
      *     name="panier_ajout",
      *     defaults = {"quantite" : 1},
      *     requirements = {
-     *     "id_utilisateur" = "[1-9]\d*",
      *     "id_produit" = "[1-9]\d*",
      *     "quantite" = "[1-9]\d*"
      *     }
      * )
+     * @param $user
+     * @param $product
+     * @param $quantity
+     * @return Response
      */
 
     public function ajoutPanierAction($user, $product, $quantity) : Response {
 
         $em = $this->getDoctrine()->getManager();
 
-        $panier = new Panier();
-        $panier -> setUtilisateur($user)
-                -> setProduit($product)
-                -> setQuantite($quantity);
+        if (!is_null($user) && !is_null($product)) {
+            $panier = new Panier();
+            $panier->setUtilisateur($user)
+                ->setProduit($product)
+                ->setQuantite($quantity);
 
-        $em->persist($panier);
-        $em->flush();
-        dump($panier);
+            $em->persist($panier);
+            $em->flush();
+            dump($panier);
 
-        return $this->redirectToRoute('panier');
+            return $this->redirectToRoute('panier_liste');
+        }
+
+        else return $this->render('main.html.twig');
     }
 
     // - Suppression d'un article dans le panier (enregistrement de la table) avec son id -
@@ -69,5 +79,34 @@ class PanierController extends AbstractController
         dump($panier);
 
         return $this->redirectToRoute('panier');
+    }
+
+    // - Liste les paniers de l'utilisateur actuel -
+    /**
+     * @Route ("/listepanier", name = "panier_liste")
+     */
+
+    public function listePanierAction() : Response {
+
+        $panierRepository = $this->getRep('App:Panier');
+        $userRepository = $this->getRep('App:Utilisateur');
+        $idUser = $this->getCurrentUser();
+
+        /** @var Utilisateur $user */
+        $user = $userRepository->find($idUser);
+
+        //Si l'utilisateur n'est pas auhentifié ou s'il est admin
+        //if (is_null($user) || $user->getIsAdmin()) return $this->render('templates/main.html.twig');
+
+        //Sinon s'il n'est pas admin
+        //else {
+            $paniers = $panierRepository->findBy(array('utilisateur' => $user));
+
+                $args = array (
+                    'paniers' => $paniers,
+                    'utilisateur' => $user
+                );
+        //}
+        return $this->render('panier.html.twig', $args);
     }
 }

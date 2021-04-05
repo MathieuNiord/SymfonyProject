@@ -11,7 +11,7 @@ class MyAbstractController extends AbstractController
     protected function getCurrentUser()
     {
         $em = $this->getDoctrine()->getManager();
-        $userRep= $em->getRepository('App:Utilisateur');
+        $userRep = $em->getRepository('App:Utilisateur');
         return $userRep->find($this->getParameter('id'));
     }
 

@@ -1,10 +1,10 @@
 {% extends 'templates/base.html.twig' %}
 
 {% block body %}
-    <h1>Liste des produits</h1>
+    <h1>Panier de {{ utilisateur.prenom }}</h1>
 
-    {% if products is empty %}
-        <p>Aucun produit dans la liste</p>
+    {% if paniers is empty %}
+        <p>Votre panier est vide !</p>
     {% else %}
         <table>
             <tr>
@@ -12,14 +12,13 @@
                 <th>Quantité</th>
                 <th>Prix</th>
             </tr>
-            {% for product in products %}
+            {% for panier in paniers %}
                 <tr>
-                    <td>{{ product.libelle }}</td>
-                    <td>{{ product.quantite }}</td>
-                    <td>{{ product.prix }}</td>
+                    <td>{{ panier.produit.libelle }}</td>
+                    <td>{{ panier.quantite }}</td>
+                    <td>{{ panier.produit.prix * panier.quantite }}</td>
                 </tr>
             {% endfor %}
         </table>
     {% endif %}
 {% endblock %}
-

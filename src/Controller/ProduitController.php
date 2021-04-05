@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Doctrine\Common\Collections\Selectable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,17 +11,19 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Produit;
 use App\Form\ProduitType;
 
-class ProduitController extends AbstractController
+class ProduitController extends MyAbstractController
 {
+
     /**
      * @Route("/produit", name="produit")
      */
     public function indexAction(): Response
     {
-        return $this->render('produit/index.html.twig', [
+        return $this->render('index.html.twig', [
             'controller_name' => 'ProduitController',
         ]);
     }
+
 
     /**
      * @Route ("product/add", name="produit_ajout")
@@ -55,8 +58,9 @@ class ProduitController extends AbstractController
 
         $args = array('product_form' => $form->createView());
 
-        return $this->render('produit/ajoutProduit.html.twig', $args);
+        return $this->render('ajoutProduit.html.twig', $args);
     }
+
 
     /**
      * @Route ("product/delete/{id}", name="produit_suppression")
@@ -70,7 +74,6 @@ class ProduitController extends AbstractController
 
         /** @var Produit $product **/
         $product = $productRepository->find($id);
-
 
         if (!is_null($product)) {
 
@@ -94,14 +97,33 @@ class ProduitController extends AbstractController
      * @return Response
      */
 
-    public function listProductAction(): Response
-    {
+    public function listProductAction(): Response {
         $em = $this->getDoctrine()->getManager();
         $productRepository = $em->getRepository('App:Produit');
         $products = $productRepository->findAll();
 
         $args = array('products' => $products);
 
-        return $this->render('produit/listeProduits.html.twig', $args);
+        return $this->render('listeProduits.html.twig', $args);
+    }
+
+
+    // - Magasin (Affichage + Achat produits) -
+
+    /**
+     * @Route ("/shop", name="produit_magasin")
+     * @param Request $request
+     * @return Response
+     */
+
+    public function shopAction(Request $request) : Response {
+
+        $em = $this->getDoctrine()->getManager();
+        $panierRepository = $this->getRep('App:Panier');
+
+        $products = $this->getRep('App:Produit')->findAll();
+        $args = array('products' => $products);
+
+        return $this->render('magasin.html.twig', $args);
     }
 }
