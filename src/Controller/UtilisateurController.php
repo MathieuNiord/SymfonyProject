@@ -41,15 +41,27 @@ class UtilisateurController extends MyAbstractController
 
 
     /**
-     * @Route("user/create",name="utilisateur_creation")
+     * @Route("create/{id}",name="utilisateur_creation", defaults={"id":"O"},
+     *     requirements = {"id" = "[0-9]\d*"})
      * @param Request $request
      * @return Response
      */
-    public function createUserAction(Request $request): Response
+    public function createOrEditUserAction(Request $request,$id): Response
     {
         $em = $this->getDoctrine()->getManager();
 
-        $form = $this->createForm(UtilisateurType::class);
+        if($id!=0){
+            $idCurrentUser = $this->getCurrentUser()->getId();
+            if($idCurrentUser!=$id){
+                throw new NotFoundHttpException("Vous ne pouvez pas éditer un autre client !");
+            }
+            $user = $this->getRep('App:Utilisateur')->find($id);
+            $form = $this->createForm(UtilisateurType::class,$user);
+        }
+        else {
+            $form = $this->createForm(UtilisateurType::class);
+        }
+
         $form->add('send', SubmitType::class, ['label' => 'Création d\'un compte utilisateur']);
         $form->handleRequest($request);
 
@@ -64,8 +76,12 @@ class UtilisateurController extends MyAbstractController
             $em->persist($user);
             $em->flush();
             dump($user);
-
-            $this->addFlash('info', 'L\'utilisateur a bien été créé');
+            if($id=="0"){
+                $this->addFlash('info', 'L\'utilisateur a bien été créé');
+            }
+            else{
+                $this->addFlash('info', 'L\'utilisateur a bien été édité');
+            }
 
             return $this->render('templates/main.html.twig');
         }
@@ -80,7 +96,7 @@ class UtilisateurController extends MyAbstractController
     // - Suppression d'un utilisateur à partir de son id -
 
     /**
-     * @Route ("user/delete/{id}",
+     * @Route ("delete/{id}",
      *     name="utilisateur_suppression",
      *     requirements = {"id" = "[0-9]\d*"}
      * )
@@ -89,39 +105,23 @@ class UtilisateurController extends MyAbstractController
      */
 
     public function suppressionUtilisateurAction($id) : Response {
-
-        $em = $this->getDoctrine()->getManager();
-        $userRepository = $em->getRepository('App:Utilisateur');
-
-        /** @var Utilisateur $currentUser */
-        $currentUser = $userRepository->find($this->getParameter('id'));
-
+        $currentUser = $this->getCurrentUser();
         $args = array('user' => $currentUser);
 
         if (!is_null($currentUser) && $currentUser->getIsadmin()) {
-
-            /** @var Utilisateur $user */
+            $userRepository = $this->getRep('App:Utilisateur');
             $user = $userRepository->find($id);
-
             if (!is_null($user)) {
                 $em->remove($user);
                 $em->flush();
-
                 $this->addFlash("info", "Utilisateur " . $user->getNom() . " supprimé");
                 return $this->redirectToRoute('utilisateur_liste');
             }
-
             else {
                 $this->addFlash("info", "L'utilisateur que vous tentez de supprimer n'existe pas ou plus");
                 return $this->render('accueil.html.twig', $args);
             }
         }
-
-        else if (!is_null($currentUser)) {
-            $this->addFlash("info", "Vous n'avez pas les droits");
-            return $this->render('accueil.html.twig', $args);
-        }
-
         else {
             $this->addFlash("info", "Vous n'avez pas les droits");
             return $this->render('accueil.html.twig', $args);
@@ -129,7 +129,7 @@ class UtilisateurController extends MyAbstractController
     }
 
     /**
-     * @Route("disconnect", name="disconnectAction")
+     * @Route("disconnect", name="disconnect")
      */
     public function disconnect(): Response
     {

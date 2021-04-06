@@ -8,7 +8,7 @@
         <li><a href="{{ path('accueil',{'user': user}) }}">Déconnexion</a></li>
         {% if user.isadmin ==0 %}
 
-        <li><a href="{{ path('accueil',{'user': user}) }}">Editer le profil</a></li>
+        <li><a href="{{ path('utilisateur_creation',{'id': user.id}) }}">Editer le profil</a></li>
         <li><a href="{{ path('produit_liste') }}">Magasin</a></li>
         <li><a href="{{ path('panier_liste',{'user': user}) }}">Panier</a></li>
 
