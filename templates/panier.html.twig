@@ -1,6 +1,8 @@
-{% extends 'templates/base.html.twig' %}
+{% extends 'templates/main.html.twig' %}
 
-{% block body %}
+{% block title %}Panier{% endblock %}
+
+{% block body2 %}
     <h1>Panier de {{ utilisateur.prenom }}</h1>
 
     {% if paniers is empty %}

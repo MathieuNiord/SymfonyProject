@@ -36,7 +36,7 @@ class Utilisateur
 
     /**
      * @ORM\Column(
-     *     type="string", length=30, name="identifiant", unique=true
+     *     type="string", length=30, name="identifiant", unique=true,
      *     options={"comment" = "sert de login (doit être unique)"})
      * @Assert\NotBlank(message = "Le champ identifiant ne peut pas être vide")
      * @Assert\Length(max="32")

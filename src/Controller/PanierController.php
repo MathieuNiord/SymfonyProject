@@ -85,28 +85,11 @@ class PanierController extends MyAbstractController
     /**
      * @Route ("/listepanier", name = "panier_liste")
      */
-
     public function listePanierAction() : Response {
 
-        $panierRepository = $this->getRep('App:Panier');
-        $userRepository = $this->getRep('App:Utilisateur');
-        $idUser = $this->getCurrentUser();
-
-        /** @var Utilisateur $user */
-        $user = $userRepository->find($idUser);
-
-        //Si l'utilisateur n'est pas auhentifié ou s'il est admin
-        //if (is_null($user) || $user->getIsAdmin()) return $this->render('templates/main.html.twig');
-
-        //Sinon s'il n'est pas admin
-        //else {
-            $paniers = $panierRepository->findBy(array('utilisateur' => $user));
-
-                $args = array (
-                    'paniers' => $paniers,
-                    'utilisateur' => $user
-                );
-        //}
+        $user = $this->getCurrentUser();
+        $paniers = $user->getPaniers();
+        $args = array ('paniers' => $paniers,'utilisateur' => $user);
         return $this->render('panier.html.twig', $args);
     }
 }
