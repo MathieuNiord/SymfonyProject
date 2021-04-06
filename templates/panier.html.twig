@@ -3,9 +3,9 @@
 {% block title %}Panier{% endblock %}
 
 {% block body2 %}
-    <h1>Panier de {{ utilisateur.prenom }}</h1>
+    <h1>Panier de {{ user.prenom }}</h1>
 
-    {% if paniers is empty %}
+    {% if user.paniers is empty %}
         <p>Votre panier est vide !</p>
     {% else %}
         <table>
@@ -14,7 +14,7 @@
                 <th>Quantité</th>
                 <th>Prix</th>
             </tr>
-            {% for panier in paniers %}
+            {% for panier in user.paniers %}
                 <tr>
                     <td>{{ panier.produit.libelle }}</td>
                     <td>{{ panier.quantite }}</td>

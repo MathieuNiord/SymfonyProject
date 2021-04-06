@@ -26,5 +26,4 @@ class MyAbstractController extends AbstractController
     {
         return $this->getDoctrine()->getManager()->getRepository($className);
     }
-
 }

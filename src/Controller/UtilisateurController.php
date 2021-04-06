@@ -7,37 +7,36 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Utilisateur;
 use Symfony\Component\Security\Core\User\User;
 
-class UtilisateurController extends AbstractController
+/**
+ * Class UtilisateurController
+ * @package App\Controller
+ * @Route("user/")
+ */
+class UtilisateurController extends MyAbstractController
 {
-    /**
-     * @Route("/utilisateur", name="utilisateur")
-     */
-    public function indexAction(): Response
-    {
-        return $this->render('utilisateur/index.html.twig', [
-            'controller_name' => 'UtilisateurController',
-        ]);
-    }
 
     /**
      * @Route (
-     *     "user/list",
+     *     "liste",
      *     name = "utilisateur_liste"
      * )
      */
-    public function listeUtilisateurAction() : Response {
+    public function editUtilisateurAction() : Response {
 
-        $em = $this->getDoctrine()->getManager();
-        $userRepository = $em->getRepository('App:Utilisateur');
-        $user = $userRepository->findAll();
+       $user = $this->getCurrentUser();
 
-        $args = array('utilisateurs' => $user);
+        if(!is_null($user) && $user->getIsAdmin()){
+            $userRepository = $em->getRep('App:Utilisateur');
+            $users = $userRepository->findAll();
+            return $this->render('listeUtilisateurs.html.twig', ['utilisateurs'=>$users]);
+        }
+        throw new NotFoundHttpException("Vous n'êtes pas admin, vous ne pouvez pas éditer les utilisateurs");
 
-        return $this->render('listeUtilisateurs.html.twig', $args);
     }
 
 
@@ -129,4 +128,17 @@ class UtilisateurController extends AbstractController
         }
     }
 
+    /**
+     * @Route("disconnect", name="disconnectAction")
+     */
+    public function disconnect(): Response
+    {
+        $user = $this->getCurrentUser();
+
+        if(is_null($user)){
+            throw new NotFoundHttpException('vous ne pouvez pas vous déconnecter car vous n\'êtes pas authentifié');
+        }
+        $this->addFlash('info', 'vous vous êtes bien déconnecté');
+        return $this->render("templates/main.html.twig");
+    }
 }

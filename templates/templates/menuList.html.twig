@@ -10,7 +10,7 @@
 
         <li><a href="{{ path('accueil',{'user': user}) }}">Editer le profil</a></li>
         <li><a href="{{ path('produit_liste') }}">Magasin</a></li>
-        <li><a href="{{ path('panier_liste',{'utilisateur': user}) }}">Panier</a></li>
+        <li><a href="{{ path('panier_liste',{'user': user}) }}">Panier</a></li>
 
         {% else %}
             <li><a href="{{ path('accueil',{'user': user}) }}">Gérer les utilisateurs</a></li>

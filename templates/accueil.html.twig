@@ -7,7 +7,7 @@
         {% if user is null%}
             visiteur !
         {% else %}
-            {% if user.isadmin == true %}
+            {% if user.isadmin %}
                 {{ user.nom }}, vous êtes admin
             {% else %}
                 {{ user.nom }} vous êtes un client

@@ -35,6 +35,7 @@ class Produit
     private $quantite;
 
     /**
+     * @var Collection
      * @ORM\OneToMany(targetEntity=Panier::class, mappedBy="produit")
      */
     private $paniers;

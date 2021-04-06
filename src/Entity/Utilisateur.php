@@ -73,6 +73,7 @@ class Utilisateur
     private $isAdmin;
 
     /**
+     * @var Collection
      * @ORM\OneToMany(targetEntity=Panier::class, mappedBy="utilisateur")
      */
     private $paniers;

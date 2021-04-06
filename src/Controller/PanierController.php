@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Produit;
-use App\Entity\Utilisateur;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Panier;
 class PanierController extends MyAbstractController
@@ -86,10 +84,10 @@ class PanierController extends MyAbstractController
      * @Route ("/listepanier", name = "panier_liste")
      */
     public function listePanierAction() : Response {
-
         $user = $this->getCurrentUser();
-        $paniers = $user->getPaniers();
-        $args = array ('paniers' => $paniers,'utilisateur' => $user);
-        return $this->render('panier.html.twig', $args);
+        if(is_null($user) || $user->getIsAdmin()){
+            throw new NotFoundHttpException('Vous êtes admin, vous ne pouvez pas avoir de panier');
+        }
+        return $this->render('panier.html.twig', ['user'=>$this->getCurrentUser()]);
     }
 }

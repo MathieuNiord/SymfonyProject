@@ -17,7 +17,7 @@ class UtilisateurType extends AbstractType
             ->add('motDePasse')
             ->add('nom')
             ->add('prenom')
-            ->add('aniversaire', DateType::Class, array(
+            ->add('anniversaire', DateType::Class, array(
                 'years' => range(date('Y')-100, date('Y')-13)
             ));
         ;
