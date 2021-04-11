@@ -1,20 +1,20 @@
 <h2>Voici la liste des actions réalisables :</h2>
 <ul>
-    <li><a href="{{ path('accueilAction',{'user': user}) }}">Accueil</a></li>
+    <li><a href="{{ path('accueil') }}">Accueil</a></li>
     {% if user is null %}
-        <li><a href="{{ path('connectUserAction',{'user': user}) }}">Se Connecter</a></li>
-        <li><a href="{{ path('createOrEditUserAction') }}">S'inscrire</a></li>
+        <li><a href="{{ path('utilisateur_connect',{'user': user}) }}">Se Connecter</a></li>
+        <li><a href="{{ path('utilisateur_createoredit') }}">S'inscrire</a></li>
     {% else %}
-        <li><a href="{{ path('disconnectUserAction',{'user': user}) }}">Déconnexion</a></li>
+        <li><a href="{{ path('utilisateur_disconnect',{'user': user}) }}">Déconnexion</a></li>
         {% if user.isadmin ==0 %}
 
-        <li><a href="{{ path('createOrEditUserAction',{'id': user.id}) }}">Editer mon profil</a></li>
-        <li><a href="{{ path('shopProductsAction') }}">Voir le magasin</a></li>
-        <li><a href="{{ path('cartListAction',{'user': user}) }}"> Mon panier</a></li>
+        <li><a href="{{ path('utilisateur_createoredit',{'id': user.id}) }}">Editer mon profil</a></li>
+        <li><a href="{{ path('produit_shop') }}">Voir le magasin</a></li>
+        <li><a href="{{ path('panier_list',{'user': user}) }}"> Mon panier</a></li>
 
         {% else %}
-            <li><a href="{{ path('userListAction',{'user': user}) }}">Gérer les utilisateurs</a></li>
-            <li><a href="{{ path('createProductAction') }}">Ajouter un produit</a></li>
+            <li><a href="{{ path('utilisateur_list',{'user': user}) }}">Gérer les utilisateurs</a></li>
+            <li><a href="{{ path('produit_create') }}">Ajouter un produit</a></li>
             <li><a href="https://fr.wikipedia.org/wiki/Amour_et_Amnésie">Amour et Amnésie</a></li>
         {% endif %}
     {% endif %}

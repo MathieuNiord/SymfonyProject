@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Produit;
+use App\Entity\Utilisateur;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,83 +18,55 @@ use App\Entity\Panier;
 class PanierController extends MyAbstractController
 {
 
-    // - Ajout d'un produit dans le panier pour un utilisateur donné -
-
+    // - Suppression d'un article dans le panier (enregistrement de la table) avec son id -
     /**
-     * @Route ("/add/{id}/{quantity}",
-     *     name="cartAddAction",
-     *     defaults = {"quantity" : 1},
-     *     requirements = {
-     *     "id" = "[1-9]\d*",
-     *     "quantity" = "[1-9]\d*"
-     *     }
-     * )
-
-     * @param $id
-     * @param $quantity
+     * @Route ("delete",name="panier_delete")
+     * @param Request $request
      * @return Response
      */
 
-    public function cartAddAction($id, $quantity) : Response {
+    public function cartDeleteAction(Request $request) : Response {
+        if($this->isClient()){
+            $user = $this->getCurrentUser();
+            $em = $this->getDoctrine()->getManager();
+            $panierRepository = $em->getRepository('App:Panier');
 
-        $em = $this->getDoctrine()->getManager();
-        $user = $this->getCurrentUser();
 
-        if (!is_null($user) && !$user->isAdmin())
-        {
-
-            $produit = $em->getRepository('App:Produit')->find($id);
-
-            if(!is_null($produit) && ($produit->getQuantite() >= $quantity))
-            {
-                $produit->setQuantite($produit->getQuantite() - $quantity);
-
-                $panier = new Panier();
-                $panier->setUtilisateur($user)
-                    ->setProduit($id)
-                    ->setQuantite($quantity);
-
-                $em->persist($panier);
+            //cas où l'on vide le panier sans rajouter les quantités dans les produits
+            if(!is_null($request->request->get('acheter'))){
+                $em->remove($user->getPaniers());
                 $em->flush();
-
-                dump($panier);
-                dump($produit);
             }
-            return $this->redirectToRoute('cartListAction');
+            //cas où l'on vide le panier en rajoutant les quantités dans les produits
+            elseif(!is_null($request->request->get('vider'))){
+                foreach($user->getPaniers() as $panier){
+                    $produit = $panier->getProduit();
+                    $produit->setQuantite($produit->getQuantite()+$panier->getQuantite());
+                    $em->remove($panier);
+                    $em->flush();
+                }
+            }
+            else {
+                foreach ($request->request->all() as $key => $value) {
+                    /** @var Panier $panier */
+                    $panier = $panierRepository->find($key);
+                    $produit = $panier->getProduit();
+                    $produit->setQuantite($produit->getQuantite() + $panier->getQuantite());
+                    $em->remove($panier);
+                    $em->flush();
+                }
+                $this->addFlash('info', 'vous avez retiré un article de votre panier');
+
+            }
+            return $this->redirectToRoute('panier_list');
         }
+        else throw new NotFoundHttpException("Vous devez être un client");
 
-        else throw new NotFoundHttpException("Erreur !");
-    }
-
-    // - Suppression d'un article dans le panier (enregistrement de la table) avec son id -
-    /**
-     * @Route ("/delete/{id}",
-     *     name="cartDeleteAction",
-     *     requirements = {
-     *     "id" = "[1-9]\d*"
-     *     }
-     * )
-     */
-
-    public function cartDeleteAction($id) : Response {
-
-        $em = $this->getDoctrine()->getManager();
-        $panierRepository = $em->getRepository('App:Panier');
-        $cart = $panierRepository->find($id);
-
-        if(!is_null($cart) && $cart->getUtilisateur()->getId()==$this->getParameter('id'))
-        {
-            $cart->getProduit()->setQuantite($cart->getProduit()->getQuantite()+  $cart->getQuantite());
-            $em->remove($cart);
-            $em->flush();
-        }
-        else throw new NotFoundHttpException("Vous n'avez pas les droits de modifier ce panier");
-        return $this->redirectToRoute('cartListAction');
     }
 
     // - Liste les paniers de l'utilisateur actuel -
     /**
-     * @Route ("list", name = "cartListAction")
+     * @Route ("list", name ="panier_list")
      */
     public function cartListAction() : Response {
         $user = $this->getCurrentUser();
@@ -99,5 +74,53 @@ class PanierController extends MyAbstractController
             throw new NotFoundHttpException("Vous n'êtes pas un client, vous ne n'avez pas de panier ");
         }
         return $this->render('panier.html.twig', ['user'=>$this->getCurrentUser()]);
+    }
+
+
+    // - Magasin (Affichage + Achat produits) -
+    /**
+     * @Route (name="produit_addcart")
+     * @param Request $request
+     * @return Response
+     */
+
+    public function addCartAction(Request $request) : Response {
+        /** @var Utilisateur $user */
+        $user = $this->getCurrentUser();
+
+        $em = $this->getDoctrine()->getManager();
+        $produitRepository = $this->getRep('App:Produit');
+        $panierRepository = $this->getRep('App:Panier');
+
+
+        foreach ($request->request->all() as $key => $value)
+        {
+            /** @var Produit $product */
+            $product = $produitRepository->find($key);
+
+            if(!is_null($product) && $value>0 && $product->getQuantite()>=$value){
+
+                $product->setQuantite($product->getQuantite()-$value);
+                /** @var Panier $panier */
+                $paniers = $panierRepository->findBy(array('utilisateur' => $user, 'produit' => $product));
+                if(empty($paniers)){
+                    $panier = new Panier();
+                    $panier->setProduit($product)
+                        ->setQuantite($value)
+                        ->setUtilisateur($user);
+                }
+                else{
+                    $panier =$paniers[0]; // il y a qu'un seul panier
+                    $panier->setQuantite($panier->getQuantite()+$value);
+                }
+                $em->persist($panier);
+                $em->flush();
+            }
+        }
+
+
+
+        $this->addFlash('info',"Ajout effectué");
+        return $this->redirectToRoute('panier_list');
     }
 }

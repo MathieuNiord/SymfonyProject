@@ -23,7 +23,7 @@ class ProduitController extends MyAbstractController
 {
 
     /**
-     * @Route ("create", name="createProductAction")
+     * @Route ("create", name="produit_create")
      * @param Request $request
      * @return Response
      */
@@ -31,7 +31,7 @@ class ProduitController extends MyAbstractController
     public function createProductAction(Request $request): Response
     {
         $user = $this->getCurrentUser();
-        if(is_null($user) || !$user->isAdmin()){
+        if(is_null($user) || !$user->getIsAdmin()){
             throw new NotFoundHttpException("Vous devez être administrateur pour ajouter un produit dans le magasin");
         }
 
@@ -48,11 +48,9 @@ class ProduitController extends MyAbstractController
             $em->persist($product);
             $em->flush();
 
-            dump($product);
-
             $this->addFlash('info', 'Le produit a bien été ajouté');
 
-            return $this->redirectToRoute('produit_liste');
+            return $this->redirectToRoute('accueil');
         }
 
         if ($form->isSubmitted()) $this->addFlash('info', 'échec de l\'ajout');
@@ -62,46 +60,9 @@ class ProduitController extends MyAbstractController
         return $this->render('ajoutProduit.html.twig', $args);
     }
 
-
-    /**
-     * @Route ("delete/{id}", name="deleteProductAction")
-     * @return Response
-     */
-
-    public function deleteProductAction($id): Response
-    {
-        $em = $this->getDoctrine()->getManager();
-        $productRepository = $em->getRepository('App:Produit');
-        $panierRepository = $em->getRepository('App:Panier');
-
-        /** @var Produit $product **/
-        $product = $productRepository->find($id);
-
-        if (!is_null($product)) {
-
-            $this->addFlash('info', 'Le produit ' . $product->getLibelle() . ' a bien été supprimé');
-
-            $paniers = $panierRepository->findBy(['produit' => $product]);
-
-            $em->remove($paniers);
-            $em->remove($product);
-            $em->flush();
-
-            dump($product);
-
-        }
-
-        else {
-            $this->addFlash('info', 'Le produit n\'existe pas ou plus');
-        }
-
-        return $this->redirectToRoute('produit_liste');
-    }
-
-
     // - Magasin (Affichage + Achat produits) -
     /**
-     * @Route ("shop", name="shopProductsAction")
+     * @Route ("shop", name="produit_shop")
      * @return Response
      */
 
@@ -114,43 +75,6 @@ class ProduitController extends MyAbstractController
         $args = array('products' => $products);
 
         return $this->render('magasin.html.twig', $args);
-    }
-
-    // - Magasin (Affichage + Achat produits) -
-    /**
-     * @Route (name="shopRequestAction")
-     * @param Request $request
-     * @return Response
-     */
-
-    public function shopRequestAction(Request $request) : Response {
-
-        $em = $this->getDoctrine()->getManager();
-        $produitRepository = $this->getRep('App:Produit');
-
-        /** @var Utilisateur $user */
-        $user = $this->getCurrentUser();
-
-        $products = $request->request->all();
-        dump($products);
-        foreach ($products as $key => $value)
-        {
-            /** @var Produit $product */
-            $product = $produitRepository->find($key);
-
-            if(!is_null($product) && $value>0 && $product->getQuantite()>=$value){
-
-                $product->setQuantite($product->getQuantite()-$value);
-
-                $panier = new Panier();
-                $panier->setProduit($product)->setQuantite($value)->setUtilisateur($user);
-                $em->persist($panier);
-                $em->flush();
-                dump($panier);
-            }
-        }
-        $this->addFlash('info',"Ajout effectué");
-        return $this->redirectToRoute('cartListAction');
     }
 
 }

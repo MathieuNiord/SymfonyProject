@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\PanierRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -11,6 +12,14 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Panier
 {
+
+    /**
+     * Panier constructor
+     */
+    public function __construct()
+    {
+        $this->quantite=0;
+    }
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -19,7 +28,7 @@ class Panier
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options={"default"=0})
      */
     private $quantite;
 

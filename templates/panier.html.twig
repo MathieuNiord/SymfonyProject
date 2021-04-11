@@ -8,19 +8,30 @@
     {% if user.paniers is empty %}
         <p>Votre panier est vide !</p>
     {% else %}
-        <table>
-            <tr>
-                <th>Libellé</th>
-                <th>Quantité</th>
-                <th>Prix</th>
-            </tr>
-            {% for panier in user.paniers %}
+        <form method="post" action="{{ path('panier_delete') }}">
+            <table>
                 <tr>
-                    <td>{{ panier.produit.libelle }}</td>
-                    <td>{{ panier.quantite }}</td>
-                    <td>{{ panier.produit.prix * panier.quantite }}</td>
+                    <th>Libellé</th>
+                    <th>Prix u.</th>
+                    <th>Quantité</th>
+                    <th>Prix total</th>
+                    <th>Action</th>
                 </tr>
-            {% endfor %}
-        </table>
+                {% for panier in user.paniers %}
+                    <tr>
+                        <td>{{ panier.produit.libelle }}</td>
+                        <td>{{ panier.produit.prix }}</td>
+                        <td>{{ panier.quantite }}</td>
+                        <td>{{ panier.produit.prix * panier.quantite }}</td>
+                        <td><input type="submit"  name="{{ panier.id }}" value="Supprimer"/></td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="3"></td>
+                    <td><input type="submit"  name="acheter" value="Acheter"  /></td>
+                    <td><input type="submit"  name="vider" value="Vider"  /> </td>
+                </tr>
+            </table>
+        </form>
     {% endif %}
 {% endblock %}

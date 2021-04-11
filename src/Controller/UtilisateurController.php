@@ -23,7 +23,7 @@ class UtilisateurController extends MyAbstractController
     /**
      * @Route (
      *     "list",
-     *     name = "userListAction"
+     *     name = "utilisateur_list"
      * )
      */
     //TODO manageUsersAction
@@ -40,7 +40,7 @@ class UtilisateurController extends MyAbstractController
 
 
     /**
-     * @Route("createoredit/{id}",name="createOrEditUserAction", defaults={"id":"O"},
+     * @Route("createoredit/{id}",name="utilisateur_createoredit", defaults={"id":"O"},
      *     requirements = {"id" = "[0-9]\d*"})
      * @param Request $request
      * @return Response
@@ -96,7 +96,7 @@ class UtilisateurController extends MyAbstractController
 
     /**
      * @Route ("delete/{id}",
-     *     name="deleteUserAction",
+     *     name="utilisateur_delete",
      *     requirements = {"id" = "[0-9]\d*"}
      * )
      * @param $id
@@ -127,7 +127,7 @@ class UtilisateurController extends MyAbstractController
         }
     }
     /**
-     * @Route("connect", name="connectUserAction")
+     * @Route("connect", name="utilisateur_connect")
      */
     public function connectUserAction(): Response
     {
@@ -137,10 +137,10 @@ class UtilisateurController extends MyAbstractController
             throw new NotFoundHttpException('vous ne pouvez pas vous déconnecter car vous n\'êtes pas authentifié');
         }
         $this->addFlash('info', 'Vous pourrez bientôt vous connecter');
-        return $this->redirectToRoute('accueilAction');
+        return $this->redirectToRoute('accueil');
     }
     /**
-     * @Route("disconnect", name="disconnectUserAction")
+     * @Route("disconnect", name="utilisateur_disconnect")
      */
     public function disconnectUserAction(): Response
     {
@@ -150,6 +150,6 @@ class UtilisateurController extends MyAbstractController
             throw new NotFoundHttpException('vous ne pouvez pas vous déconnecter car vous n\'êtes pas authentifié');
         }
         $this->addFlash('info', 'vous vous êtes bien déconnecté');
-        return $this->redirectToRoute('accueilAction');
+        return $this->redirectToRoute('accueil');
     }
 }
