@@ -6,59 +6,67 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Panier;
+
+/**
+ * Class PanierController
+ * @package App\Controller
+ * @Route("cart/")
+ */
 class PanierController extends MyAbstractController
 {
-    /**
-     * @Route("/panier", name="panier")
-     */
-    public function indexAction(): Response
-    {
-        return $this->render('panier/index.html.twig', [
-            'controller_name' => 'PanierController',
-        ]);
-    }
 
     // - Ajout d'un produit dans le panier pour un utilisateur donné -
 
     /**
-     * @Route ("/panier/ajout/{id_user}/{id_produit}/{quantite}",
-     *     name="panier_ajout",
-     *     defaults = {"quantite" : 1},
+     * @Route ("/add/{id}/{quantity}",
+     *     name="cartAddAction",
+     *     defaults = {"quantity" : 1},
      *     requirements = {
-     *     "id_produit" = "[1-9]\d*",
-     *     "quantite" = "[1-9]\d*"
+     *     "id" = "[1-9]\d*",
+     *     "quantity" = "[1-9]\d*"
      *     }
      * )
-     * @param $user
-     * @param $product
+
+     * @param $id
      * @param $quantity
      * @return Response
      */
 
-    public function ajoutPanierAction($user, $product, $quantity) : Response {
+    public function carAddAction($id, $quantity) : Response {
 
         $em = $this->getDoctrine()->getManager();
+        $user = $this->getCurrentUser();
 
-        if (!is_null($user) && !is_null($product)) {
-            $panier = new Panier();
-            $panier->setUtilisateur($user)
-                ->setProduit($product)
-                ->setQuantite($quantity);
+        if (!is_null($user) && !$user->isAdmin())
+        {
 
-            $em->persist($panier);
-            $em->flush();
-            dump($panier);
+            $produit = $em->getRepository('App:Produit')->find($id);
 
-            return $this->redirectToRoute('panier_liste');
+            if(!is_null($produit) && ($produit->getQuantite() >= $quantity))
+            {
+                $produit->setQuantite($produit->getQuantite() - $quantity);
+
+                $panier = new Panier();
+                $panier->setUtilisateur($user)
+                    ->setProduit($id)
+                    ->setQuantite($quantity);
+
+                $em->persist($panier);
+                $em->flush();
+
+                dump($panier);
+                dump($produit);
+            }
+            return $this->redirectToRoute('cartListAction');
         }
 
-        else return $this->render('main.html.twig');
+        else throw new NotFoundHttpException("Erreur !");
     }
 
     // - Suppression d'un article dans le panier (enregistrement de la table) avec son id -
     /**
-     * @Route ("/panier/suppression/{id}",
-     *     name="panier_suppression",
+     * @Route ("/delete/{id}",
+     *     name="cartDeleteAction",
      *     requirements = {
      *     "id" = "[1-9]\d*"
      *     }
@@ -69,24 +77,26 @@ class PanierController extends MyAbstractController
 
         $em = $this->getDoctrine()->getManager();
         $panierRepository = $em->getRepository('App:Panier');
-        $panier = $panierRepository->find($id);
+        $cart = $panierRepository->find($id);
 
-
-        $em->remove($panier);
-        $em->flush();
-        dump($panier);
-
-        return $this->redirectToRoute('panier');
+        if(!is_null($cart) && $cart->getUtilisateur()->getId()==$this->getParameter('id'))
+        {
+            $cart->getProduit()->setQuantite($cart->getProduit()->getQuantite()+  $cart->getQuantite());
+            $em->remove($cart);
+            $em->flush();
+        }
+        else throw new NotFoundHttpException("Vous n'avez pas les droits de modifier ce panier");
+        return $this->redirectToRoute('cartListAction');
     }
 
     // - Liste les paniers de l'utilisateur actuel -
     /**
-     * @Route ("/listepanier", name = "panier_liste")
+     * @Route ("list", name = "cartListAction")
      */
-    public function listePanierAction() : Response {
+    public function cartListAction() : Response {
         $user = $this->getCurrentUser();
-        if(is_null($user) || $user->getIsAdmin()){
-            throw new NotFoundHttpException('Vous êtes admin, vous ne pouvez pas avoir de panier');
+        if(is_null($user || $user->isAdmin())){
+            throw new NotFoundHttpException("Vous n'êtes pas un client, vous ne n'avez pas de panier ");
         }
         return $this->render('panier.html.twig', ['user'=>$this->getCurrentUser()]);
     }

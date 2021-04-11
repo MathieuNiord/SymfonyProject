@@ -9,33 +9,32 @@
         {% if products is empty %}
             <p>Aucun produit dans la liste</p>
         {% else %}
-            <table>
-                <tr>
-                    <th>Libellé</th>
-                    <th>Prix</th>
-                    <th>En stock</th>
-                    <th>Quantité</th>
-                </tr>
-                {% for product in products %}
+            <form action="{{ path('addProductsAction') }}" method="post">
+                <table>
                     <tr>
-                        <td>{{ product.libelle }}</td>
-                        <td>{{ product.prix }}</td>
-                        <td>{{ product.quantite }}</td>
-                        <td>
-                            <label>
-                                <select>
-                                    {% for i in 0..product.quantite %}
-                                    <option>{{ i }}</option>
-                                    {% endfor %}
-                                </select>
-                            </label>
-                        </td>
+                        <th>Libellé</th>
+                        <th>Prix</th>
+                        <th>Stock</th>
+                        <th>Choix</th>
                     </tr>
-                {% endfor %}
-                <tr>
-                    <td colspan="4"><input type="button" class="submit" value="Commander"/></td>
-                </tr>
-            </table>
+                    {% for produit in products %}
+                        <tr>
+                            <td>{{ produit.libelle }}</td>
+                            <td>{{ produit.prix }}</td>
+                            <td>{{ produit.quantite }}</td>
+                            <td>
+                                <label>
+                                    <select name="products[]">{% for i in 0..produit.quantite %}
+                                            <option>{{ i }}</option>
+                                        {% endfor %}</select>
+                                </label>
+                            </td>
+                        </tr>
+                        <br />
+                    {% endfor %}
+                </table>
+                <input type="submit" value="envoie"  />
+            </form>
         {% endif %}
     </div>
 {% endblock %}

@@ -22,14 +22,13 @@ class UtilisateurController extends MyAbstractController
 
     /**
      * @Route (
-     *     "liste",
-     *     name = "utilisateur_liste"
+     *     "userList",
+     *     name = "manageUsersAction"
      * )
      */
-    public function editUtilisateurAction() : Response {
-
+    //TODO manageUsersAction
+    public function manageUsersAction() : Response {
        $user = $this->getCurrentUser();
-
         if(!is_null($user) && $user->getIsAdmin()){
             $userRepository = $em->getRep('App:Utilisateur');
             $users = $userRepository->findAll();
@@ -41,7 +40,7 @@ class UtilisateurController extends MyAbstractController
 
 
     /**
-     * @Route("create/{id}",name="utilisateur_creation", defaults={"id":"O"},
+     * @Route("createoredit/{id}",name="createOrEditUserAction", defaults={"id":"O"},
      *     requirements = {"id" = "[0-9]\d*"})
      * @param Request $request
      * @return Response
@@ -97,7 +96,7 @@ class UtilisateurController extends MyAbstractController
 
     /**
      * @Route ("delete/{id}",
-     *     name="utilisateur_suppression",
+     *     name="deleteUserAction",
      *     requirements = {"id" = "[0-9]\d*"}
      * )
      * @param $id
@@ -129,9 +128,9 @@ class UtilisateurController extends MyAbstractController
     }
 
     /**
-     * @Route("disconnect", name="disconnect")
+     * @Route("disconnect", name="disconnectUserAction")
      */
-    public function disconnect(): Response
+    public function disconnectUserAction(): Response
     {
         $user = $this->getCurrentUser();
 

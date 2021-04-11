@@ -7,34 +7,33 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Produit;
 use App\Form\ProduitType;
 
+/**
+ * Class ProduitController
+ * @package App\Controller
+ * @Route("product/")
+ */
 class ProduitController extends MyAbstractController
 {
 
     /**
-     * @Route("/produit", name="produit")
-     */
-    public function indexAction(): Response
-    {
-        return $this->render('index.html.twig', [
-            'controller_name' => 'ProduitController',
-        ]);
-    }
-
-
-    /**
-     * @Route ("product/add", name="produit_ajout")
+     * @Route ("create", name="createProductAction")
      * @param Request $request
      * @return Response
      */
 
     public function createProductAction(Request $request): Response
     {
-        $em = $this->getDoctrine()->getManager();
+        $user = $this->getCurrentUser();
+        if(is_null($user) || !$user->isAdmin()){
+            throw new NotFoundHttpException("Vous devez être administrateur pour ajouter un produit dans le magasin");
+        }
 
+        $em = $this->getDoctrine()->getManager();
         $form = $this->createForm(ProduitType::class);
         $form->add('send', SubmitType::class, ['label' => 'Création d\' un produit']);
         $form->handleRequest($request);
@@ -63,7 +62,7 @@ class ProduitController extends MyAbstractController
 
 
     /**
-     * @Route ("product/delete/{id}", name="produit_suppression")
+     * @Route ("delete/{id}", name="deleteProductAction")
      * @return Response
      */
 
@@ -71,18 +70,23 @@ class ProduitController extends MyAbstractController
     {
         $em = $this->getDoctrine()->getManager();
         $productRepository = $em->getRepository('App:Produit');
+        $panierRepository = $em->getRepository('App:Panier');
 
         /** @var Produit $product **/
         $product = $productRepository->find($id);
 
         if (!is_null($product)) {
 
+            $this->addFlash('info', 'Le produit ' . $product->getLibelle() . ' a bien été supprimé');
+
+            $paniers = $panierRepository->findBy(['produit' => $product]);
+
+            $em->remove($paniers);
             $em->remove($product);
             $em->flush();
 
             dump($product);
 
-            $this->addFlash('info', 'Le produit ' . $product->getLibelle() . ' a bien été supprimé');
         }
 
         else {
@@ -93,30 +97,30 @@ class ProduitController extends MyAbstractController
     }
 
     /**
-     * @Route ("product/list", name="produit_liste")
+     * @Route ("list", name="listeProductAction")
      * @return Response
      */
 
-    public function listProductAction(): Response {
+    public function listeProductAction(): Response {
         $em = $this->getDoctrine()->getManager();
         $productRepository = $em->getRepository('App:Produit');
         $products = $productRepository->findAll();
 
         $args = array('products' => $products);
 
-        return $this->render('listeProduits.html.twig', $args);
+        return $this->render('magasin.html.twig', $args);
     }
 
 
     // - Magasin (Affichage + Achat produits) -
 
     /**
-     * @Route ("/shop", name="produit_magasin")
+     * @Route ("/shop", name="shopProductsAction")
      * @param Request $request
      * @return Response
      */
 
-    public function shopAction(Request $request) : Response {
+    public function shopProductsAction(Request $request) : Response {
 
         $em = $this->getDoctrine()->getManager();
         $panierRepository = $this->getRep('App:Panier');

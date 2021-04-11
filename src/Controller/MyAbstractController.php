@@ -15,7 +15,7 @@ class MyAbstractController extends AbstractController
         return $userRep->find($this->getParameter('id'));
     }
 
-    protected function getNbProduct(): int
+    protected function getNbProducts(): int
     {
         $em = $this->getDoctrine()->getManager();
         $userRep= $em->getRepository('App:Produit');

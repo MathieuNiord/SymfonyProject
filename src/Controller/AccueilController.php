@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class AccueilController extends MyAbstractController
 {
     /**
-     * @Route("", name="accueil")
+     * @Route("", name="accueilAction")
      */
     public function accueilAction():Response{
         return $this->render('accueil.html.twig',['user' => $this->getCurrentUser()]);

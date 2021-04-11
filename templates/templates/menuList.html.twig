@@ -5,11 +5,11 @@
         <li><a href="{{ path('accueil',{'user': user}) }}">Se Connecter</a></li>
         <li><a href="{{ path('utilisateur_creation') }}">S'inscrire</a></li>
     {% else %}
-        <li><a href="{{ path('accueil',{'user': user}) }}">Déconnexion</a></li>
+        <li><a href="{{ path('disconnect',{'user': user}) }}">Déconnexion</a></li>
         {% if user.isadmin ==0 %}
 
         <li><a href="{{ path('utilisateur_creation',{'id': user.id}) }}">Editer le profil</a></li>
-        <li><a href="{{ path('produit_liste') }}">Magasin</a></li>
+        <li><a href="{{ path('listeProduitAction') }}">Magasin</a></li>
         <li><a href="{{ path('panier_liste',{'user': user}) }}">Panier</a></li>
 
         {% else %}

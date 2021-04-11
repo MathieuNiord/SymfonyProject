@@ -6,8 +6,10 @@ use App\Repository\ProduitRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @ORM\Table(name="im2021_produit")
  * @ORM\Entity(repositoryClass=ProduitRepository::class)
  */
 class Produit
@@ -26,11 +28,13 @@ class Produit
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\Positive
      */
     private $prix;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero
      */
     private $quantite;
 
