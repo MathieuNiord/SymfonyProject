@@ -22,12 +22,12 @@ class UtilisateurController extends MyAbstractController
 
     /**
      * @Route (
-     *     "userList",
-     *     name = "manageUsersAction"
+     *     "list",
+     *     name = "userListAction"
      * )
      */
     //TODO manageUsersAction
-    public function manageUsersAction() : Response {
+    public function userListAction() : Response {
        $user = $this->getCurrentUser();
         if(!is_null($user) && $user->getIsAdmin()){
             $userRepository = $em->getRep('App:Utilisateur');
@@ -126,7 +126,19 @@ class UtilisateurController extends MyAbstractController
             return $this->render('accueil.html.twig', $args);
         }
     }
+    /**
+     * @Route("connect", name="connectUserAction")
+     */
+    public function connectUserAction(): Response
+    {
+        $user = $this->getCurrentUser();
 
+        if(is_null($user)){
+            throw new NotFoundHttpException('vous ne pouvez pas vous déconnecter car vous n\'êtes pas authentifié');
+        }
+        $this->addFlash('info', 'Vous pourrez bientôt vous connecter');
+        return $this->redirectToRoute('accueilAction');
+    }
     /**
      * @Route("disconnect", name="disconnectUserAction")
      */
@@ -138,6 +150,6 @@ class UtilisateurController extends MyAbstractController
             throw new NotFoundHttpException('vous ne pouvez pas vous déconnecter car vous n\'êtes pas authentifié');
         }
         $this->addFlash('info', 'vous vous êtes bien déconnecté');
-        return $this->render("templates/main.html.twig");
+        return $this->redirectToRoute('accueilAction');
     }
 }

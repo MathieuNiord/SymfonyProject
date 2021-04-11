@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Panier;
+use App\Entity\Utilisateur;
 use Doctrine\Common\Collections\Selectable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -96,31 +98,14 @@ class ProduitController extends MyAbstractController
         return $this->redirectToRoute('produit_liste');
     }
 
-    /**
-     * @Route ("list", name="listeProductAction")
-     * @return Response
-     */
-
-    public function listeProductAction(): Response {
-        $em = $this->getDoctrine()->getManager();
-        $productRepository = $em->getRepository('App:Produit');
-        $products = $productRepository->findAll();
-
-        $args = array('products' => $products);
-
-        return $this->render('magasin.html.twig', $args);
-    }
-
 
     // - Magasin (Affichage + Achat produits) -
-
     /**
-     * @Route ("/shop", name="shopProductsAction")
-     * @param Request $request
+     * @Route ("shop", name="shopProductsAction")
      * @return Response
      */
 
-    public function shopProductsAction(Request $request) : Response {
+    public function shopProductsAction() : Response {
 
         $em = $this->getDoctrine()->getManager();
         $panierRepository = $this->getRep('App:Panier');
@@ -130,4 +115,42 @@ class ProduitController extends MyAbstractController
 
         return $this->render('magasin.html.twig', $args);
     }
+
+    // - Magasin (Affichage + Achat produits) -
+    /**
+     * @Route (name="shopRequestAction")
+     * @param Request $request
+     * @return Response
+     */
+
+    public function shopRequestAction(Request $request) : Response {
+
+        $em = $this->getDoctrine()->getManager();
+        $produitRepository = $this->getRep('App:Produit');
+
+        /** @var Utilisateur $user */
+        $user = $this->getCurrentUser();
+
+        $products = $request->request->all();
+        dump($products);
+        foreach ($products as $key => $value)
+        {
+            /** @var Produit $product */
+            $product = $produitRepository->find($key);
+
+            if(!is_null($product) && $value>0 && $product->getQuantite()>=$value){
+
+                $product->setQuantite($product->getQuantite()-$value);
+
+                $panier = new Panier();
+                $panier->setProduit($product)->setQuantite($value)->setUtilisateur($user);
+                $em->persist($panier);
+                $em->flush();
+                dump($panier);
+            }
+        }
+        $this->addFlash('info',"Ajout effectué");
+        return $this->redirectToRoute('cartListAction');
+    }
+
 }

@@ -9,7 +9,7 @@
         {% if products is empty %}
             <p>Aucun produit dans la liste</p>
         {% else %}
-            <form action="{{ path('addProductsAction') }}" method="post">
+            <form action="{{ path('shopRequestAction') }}" method="post">
                 <table>
                     <tr>
                         <th>Libellé</th>
@@ -24,7 +24,7 @@
                             <td>{{ produit.quantite }}</td>
                             <td>
                                 <label>
-                                    <select name="products[]">{% for i in 0..produit.quantite %}
+                                    <select name="{{ produit.id }}">{% for i in 0..produit.quantite %}
                                             <option>{{ i }}</option>
                                         {% endfor %}</select>
                                 </label>

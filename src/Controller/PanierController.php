@@ -32,7 +32,7 @@ class PanierController extends MyAbstractController
      * @return Response
      */
 
-    public function carAddAction($id, $quantity) : Response {
+    public function cartAddAction($id, $quantity) : Response {
 
         $em = $this->getDoctrine()->getManager();
         $user = $this->getCurrentUser();
@@ -73,7 +73,7 @@ class PanierController extends MyAbstractController
      * )
      */
 
-    public function suppressionPanierAction($id) : Response {
+    public function cartDeleteAction($id) : Response {
 
         $em = $this->getDoctrine()->getManager();
         $panierRepository = $em->getRepository('App:Panier');
