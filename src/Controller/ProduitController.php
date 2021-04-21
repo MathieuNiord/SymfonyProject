@@ -27,8 +27,7 @@ class ProduitController extends MyAbstractController
 
     public function createProductAction(Request $request): Response
     {
-        $user = $this->getCurrentUser();
-        if(is_null($user) || !$user->getIsAdmin()){
+        if(!$this->isAdmin()){
             throw new NotFoundHttpException("Vous devez être administrateur pour ajouter un produit dans le magasin");
         }
 
@@ -64,14 +63,12 @@ class ProduitController extends MyAbstractController
      */
 
     public function shopProductsAction() : Response {
+        if($this->isClient()){
 
-        $em = $this->getDoctrine()->getManager();
-        $panierRepository = $this->getRep('App:Panier');
+            return $this->render('magasin.html.twig',
+                ['products' => $this->getRep('App:Produit')->findAll()]);
 
-        $products = $this->getRep('App:Produit')->findAll();
-        $args = array('products' => $products);
-
-        return $this->render('magasin.html.twig', $args);
+        } else throw new NotFoundHttpException('Vous devez être client');
     }
 
 }

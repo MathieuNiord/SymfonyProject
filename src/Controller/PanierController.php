@@ -69,8 +69,7 @@ class PanierController extends MyAbstractController
      * @Route ("list", name ="panier_list")
      */
     public function cartListAction() : Response {
-        $user = $this->getCurrentUser();
-        if(is_null($user || $user->isAdmin())){
+        if(!$this->isClient()){
             throw new NotFoundHttpException("Vous n'êtes pas un client, vous ne n'avez pas de panier ");
         }
         return $this->render('panier.html.twig', ['user'=>$this->getCurrentUser()]);
@@ -85,40 +84,40 @@ class PanierController extends MyAbstractController
      */
 
     public function addCartAction(Request $request) : Response {
-        /** @var Utilisateur $user */
-        $user = $this->getCurrentUser();
+        if($this->isClient()){
+            /** @var Utilisateur $user */
+            $user = $this->getCurrentUser();
 
-        $em = $this->getDoctrine()->getManager();
-        $produitRepository = $this->getRep('App:Produit');
-        $panierRepository = $this->getRep('App:Panier');
+            $em = $this->getDoctrine()->getManager();
+            $produitRepository = $this->getRep('App:Produit');
+            $panierRepository = $this->getRep('App:Panier');
 
 
-        foreach ($request->request->all() as $key => $value)
-        {
-            /** @var Produit $product */
-            $product = $produitRepository->find($key);
+            foreach ($request->request->all() as $key => $value)
+            {
+                /** @var Produit $product */
+                $product = $produitRepository->find($key);
 
-            if(!is_null($product) && $value>0 && $product->getQuantite()>=$value){
+                if(!is_null($product) && $value>0 && $product->getQuantite()>=$value){
 
-                $product->setQuantite($product->getQuantite()-$value);
-                /** @var Panier $panier */
-                $paniers = $panierRepository->findBy(array('utilisateur' => $user, 'produit' => $product));
-                if(empty($paniers)){
-                    $panier = new Panier();
-                    $panier->setProduit($product)
-                        ->setQuantite($value)
-                        ->setUtilisateur($user);
+                    $product->setQuantite($product->getQuantite()-$value);
+                    /** @var Panier $panier */
+                    $paniers = $panierRepository->findBy(array('utilisateur' => $user, 'produit' => $product));
+                    if(empty($paniers)){
+                        $panier = new Panier();
+                        $panier->setProduit($product)
+                            ->setQuantite($value)
+                            ->setUtilisateur($user);
+                    }
+                    else{
+                        $panier =$paniers[0]; // il y a qu'un seul panier
+                        $panier->setQuantite($panier->getQuantite()+$value);
+                    }
+                    $em->persist($panier);
+                    $em->flush();
                 }
-                else{
-                    $panier =$paniers[0]; // il y a qu'un seul panier
-                    $panier->setQuantite($panier->getQuantite()+$value);
-                }
-                $em->persist($panier);
-                $em->flush();
             }
-        }
-
-
+        } else throw new NotFoundHttpException('Vous devez être client');
 
         $this->addFlash('info',"Ajout effectué");
         return $this->redirectToRoute('panier_list');

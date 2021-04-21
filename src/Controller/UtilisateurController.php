@@ -19,21 +19,21 @@ class UtilisateurController extends MyAbstractController
 {
 
     /**
-     * @Route (
-     *     "list",
-     *     name = "utilisateur_list"
-     * )
+     * @Route ("list", name = "utilisateur_list")
      * @param MyService $service
      * @return Response
      */
-    //TODO manageUsersAction
     public function userListAction(MyService $service) : Response {
         if($this->isAdmin()){
+
             $userRepository = $this->getRep('App:Utilisateur');
             $users = $userRepository->findAll();
-            $longueur = $service->computeTotalLenOfUserName($users);
+
+            $longueur = $service->computeTotalLenOfUserName($users);//Service
+
             $this->addFlash('info', "la longueur totale de tous les noms des utilisateurs
             est égal à $longueur");
+
             return $this->render('listeUtilisateurs.html.twig',
                 ['utilisateurs'=>$users, 'currUser' => $this->getCurrentUser()]);
         }
@@ -46,6 +46,7 @@ class UtilisateurController extends MyAbstractController
      * @Route("createoredit/{id}",name="utilisateur_createoredit", defaults={"id":"O"},
      *     requirements = {"id" = "[0-9]\d*"})
      * @param Request $request
+     * @param $id
      * @return Response
      */
     public function createOrEditUserAction(Request $request,$id): Response
@@ -95,8 +96,7 @@ class UtilisateurController extends MyAbstractController
         return $this->render('ajoutUtilisateur.html.twig', $args);
     }
 
-    // - Suppression d'un utilisateur à partir de son id -
-
+    // - Suppression d'un utilisateur
     /**
      * @Route ("delete",name="utilisateur_delete")
      * @param Request $request
@@ -125,25 +125,22 @@ class UtilisateurController extends MyAbstractController
                 }
                 $em->remove($user);
                 $em->flush();
+
                 $this->addFlash('info',"utilisateur supprimé");
             }
             return $this->redirectToRoute('utilisateur_list');
         }
         else throw new NotFoundHttpException("Vous devez être admin");
     }
+
+
     /**
      * @Route("connect", name="utilisateur_connect")
      */
     public function connectUserAction(): Response
     {
-        $user = $this->getCurrentUser();
-
-        if($this->isGuest()){
-            $this->addFlash('info', 'Vous pourrez bientôt vous connecter');
-        }
-        else{
-            throw new NotFoundHttpException('vous êtes déjà connecté');
-        }
+        if($this->isGuest())$this->addFlash('info', 'Vous pourrez bientôt vous connecter');
+        else throw new NotFoundHttpException('vous êtes déjà connecté');
         return $this->redirectToRoute('accueil');
     }
     /**
