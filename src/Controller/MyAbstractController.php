@@ -43,3 +43,5 @@ class MyAbstractController extends AbstractController
         return !is_null($this->getCurrentUser()) && $this->getCurrentUser()->getIsAdmin();
     }
 }
+
+//AUTEURS : Fréjoux Gaëtan && Niord Mathieu

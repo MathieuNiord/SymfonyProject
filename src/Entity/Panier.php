@@ -87,3 +87,5 @@ class Panier
         return $this;
     }
 }
+
+//AUTEURS : Fréjoux Gaëtan && Niord Mathieu

@@ -3,15 +3,13 @@
 namespace App\Controller;
 
 use App\Form\UtilisateurType;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\MyService;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Utilisateur;
-use Symfony\Component\Security\Core\User\User;
-
 /**
  * Class UtilisateurController
  * @package App\Controller
@@ -25,14 +23,19 @@ class UtilisateurController extends MyAbstractController
      *     "list",
      *     name = "utilisateur_list"
      * )
+     * @param MyService $service
+     * @return Response
      */
     //TODO manageUsersAction
-    public function userListAction() : Response {
-       $user = $this->getCurrentUser();
-        if(!is_null($user) && $user->getIsAdmin()){
-            $userRepository = $em->getRep('App:Utilisateur');
+    public function userListAction(MyService $service) : Response {
+        if($this->isAdmin()){
+            $userRepository = $this->getRep('App:Utilisateur');
             $users = $userRepository->findAll();
-            return $this->render('listeUtilisateurs.html.twig', ['utilisateurs'=>$users]);
+            $longueur = $service->computeTotalLenOfUserName($users);
+            $this->addFlash('info', "la longueur totale de tous les noms des utilisateurs
+            est égal à $longueur");
+            return $this->render('listeUtilisateurs.html.twig',
+                ['utilisateurs'=>$users, 'currUser' => $this->getCurrentUser()]);
         }
         throw new NotFoundHttpException("Vous n'êtes pas admin, vous ne pouvez pas éditer les utilisateurs");
 
@@ -95,36 +98,38 @@ class UtilisateurController extends MyAbstractController
     // - Suppression d'un utilisateur à partir de son id -
 
     /**
-     * @Route ("delete/{id}",
-     *     name="utilisateur_delete",
-     *     requirements = {"id" = "[0-9]\d*"}
-     * )
-     * @param $id
+     * @Route ("delete",name="utilisateur_delete")
+     * @param Request $request
      * @return Response
      */
 
-    public function suppressionUtilisateurAction($id) : Response {
-        $currentUser = $this->getCurrentUser();
-        $args = array('user' => $currentUser);
+    public function deleteUserAction(Request $request) : Response {
 
-        if (!is_null($currentUser) && $currentUser->getIsadmin()) {
-            $userRepository = $this->getRep('App:Utilisateur');
-            $user = $userRepository->find($id);
-            if (!is_null($user)) {
+        if($this->isAdmin()){
+
+            $em = $this->getDoctrine()->getManager();
+
+            $userRep = $em->getRepository('App:Utilisateur');
+
+            foreach ($request->request->all() as $key => $value) {
+
+                $user = $userRep->find($key);
+                foreach($user->getPaniers() as $panier){
+
+                    $produit = $panier->getProduit();
+                    $produit->setQuantite($produit->getQuantite()+$panier->getQuantite());
+
+                    $em->remove($panier);
+                    $em->flush();
+
+                }
                 $em->remove($user);
                 $em->flush();
-                $this->addFlash("info", "Utilisateur " . $user->getNom() . " supprimé");
-                return $this->redirectToRoute('utilisateur_liste');
+                $this->addFlash('info',"utilisateur supprimé");
             }
-            else {
-                $this->addFlash("info", "L'utilisateur que vous tentez de supprimer n'existe pas ou plus");
-                return $this->render('accueil.html.twig', $args);
-            }
+            return $this->redirectToRoute('utilisateur_list');
         }
-        else {
-            $this->addFlash("info", "Vous n'avez pas les droits");
-            return $this->render('accueil.html.twig', $args);
-        }
+        else throw new NotFoundHttpException("Vous devez être admin");
     }
     /**
      * @Route("connect", name="utilisateur_connect")
@@ -133,10 +138,12 @@ class UtilisateurController extends MyAbstractController
     {
         $user = $this->getCurrentUser();
 
-        if(is_null($user)){
-            throw new NotFoundHttpException('vous ne pouvez pas vous déconnecter car vous n\'êtes pas authentifié');
+        if($this->isGuest()){
+            $this->addFlash('info', 'Vous pourrez bientôt vous connecter');
         }
-        $this->addFlash('info', 'Vous pourrez bientôt vous connecter');
+        else{
+            throw new NotFoundHttpException('vous êtes déjà connecté');
+        }
         return $this->redirectToRoute('accueil');
     }
     /**
@@ -153,3 +160,6 @@ class UtilisateurController extends MyAbstractController
         return $this->redirectToRoute('accueil');
     }
 }
+
+
+//AUTEURS : Fréjoux Gaëtan && Niord Mathieu

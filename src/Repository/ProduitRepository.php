@@ -48,3 +48,5 @@ class ProduitRepository extends ServiceEntityRepository
     }
     */
 }
+
+//AUTEURS : Fréjoux Gaëtan && Niord Mathieu

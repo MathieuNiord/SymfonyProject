@@ -48,3 +48,5 @@ class PanierRepository extends ServiceEntityRepository
     }
     */
 }
+
+//AUTEURS : Fréjoux Gaëtan && Niord Mathieu

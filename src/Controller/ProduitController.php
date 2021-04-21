@@ -2,10 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Panier;
-use App\Entity\Utilisateur;
-use Doctrine\Common\Collections\Selectable;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -78,3 +75,5 @@ class ProduitController extends MyAbstractController
     }
 
 }
+
+//AUTEURS : Fréjoux Gaëtan && Niord Mathieu

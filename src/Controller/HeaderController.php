@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 class HeaderController extends MyAbstractController
 {
     public function imageAction(): Response{
-        return $this->render('templates/header.html.twig',array('user' => $this->getCurrentUser()));
+        return $this->render('templates/header.html.twig',['user' => $this->getCurrentUser()]);
     }
 }
 

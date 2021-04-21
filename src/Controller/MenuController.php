@@ -8,7 +8,7 @@ class MenuController extends MyAbstractController
 
     public function menuAction(): Response{
         return $this->render('templates/menuList.html.twig',
-            array('user' =>$this->getCurrentUser(), 'nbProduits' => $this->getNbProducts()));
+            ['user' =>$this->getCurrentUser(), 'nbProduits' => $this->getNbProducts()]);
     }
 }
 

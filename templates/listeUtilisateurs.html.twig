@@ -4,30 +4,39 @@
 
 {% block body2 %}
     <h1>Liste des utilisateurs</h1>
-
-    <table border="1">
-        <tr>
-            <th>Login</th>
-            <th>Nom</th>
-            <th>Prénom</th>
-            <th>Date de naissance</th>
-            <th>Statut</th>
-            <th>Mot de passe</th>
-        </tr>
-        {% for user in utilisateurs %}
+    <form method="post" action="{{ path('utilisateur_delete') }}">
+        <table border="1">
             <tr>
-                <td>{{ user.identifiant }}</td>
-                <td>{{ user.nom }}</td>
-                <td>{{ user.prenom }}</td>
-                <td>{{ user.anniversaire|date('d-m-Y') }}</td>
-                {% if user.isadmin == 1 %}
-                    <td>admin</td>
-                {% else %}
-                    <td>user</td>
-                {% endif %}
-                <td>{{ user.motdepasse }}</td>
+                <th>Login</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Date de naissance</th>
+                <th>Statut</th>
+                <th>Mot de passe</th>
+                <th>Action</th>
             </tr>
-        {% endfor %}
-    </table>
+            {% for user in utilisateurs %}
+                <tr>
+                    <td>{{ user.identifiant }}</td>
+                    <td>{{ user.nom }}</td>
+                    <td>{{ user.prenom }}</td>
+                    <td>{{ user.anniversaire|date('d-m-Y') }}</td>
+
+                    {% if user.isadmin == 1 %}
+                        <td>admin</td>
+                    {% else %}
+                        <td>user</td>
+                    {% endif %}
+                    <td>{{ user.motdepasse }}</td>
+                    {% if currUser.id != user.id %}
+                        <td><input type="submit"  name="{{ user.id }}" value="Supprimer"/></td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+    </form>
 {% endblock %}
 
+{# AUTEURS : Fréjoux Gaëtan && Niord Mathieu #}

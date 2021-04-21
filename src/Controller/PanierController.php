@@ -124,3 +124,5 @@ class PanierController extends MyAbstractController
         return $this->redirectToRoute('panier_list');
     }
 }
+
+//AUTEURS : Fréjoux Gaëtan && Niord Mathieu

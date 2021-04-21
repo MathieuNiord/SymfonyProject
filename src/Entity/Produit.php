@@ -120,3 +120,5 @@ class Produit
         return $this;
     }
 }
+
+//AUTEURS : Fréjoux Gaëtan && Niord Mathieu

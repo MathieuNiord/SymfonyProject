@@ -25,3 +25,5 @@ class ProduitType extends AbstractType
         ]);
     }
 }
+
+//AUTEURS : Fréjoux Gaëtan && Niord Mathieu
